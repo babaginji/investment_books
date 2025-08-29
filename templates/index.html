@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>投資本棚</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>投資本棚</h1>
+    <input type="text" id="title" placeholder="本のタイトルを入力">
+    <button onclick="searchBook()">検索</button>
+    <div id="results"></div>
+
+    <script>
+        async function searchBook() {
+            const title = document.getElementById("title").value;
+            const res = await fetch(`/search?title=${encodeURIComponent(title)}`);
+            const books = await res.json();
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            const shelves = {};
+            books.forEach(book => {
+                if (!shelves[book.type]) shelves[book.type] = [];
+                shelves[book.type].push(book);
+            });
+
+            for (const type in shelves) {
+                const shelfDiv = document.createElement("div");
+                shelfDiv.innerHTML = `<h2>${type}</h2>`;
+                shelves[type].forEach(book => {
+                    const bookDiv = document.createElement("div");
+                    bookDiv.className = "book";
+                    bookDiv.innerHTML = `
+                        <img src="${book.image}" alt="${book.title}" width="120">
+                        <h3>${book.title}</h3>
+                        <p>著者: ${book.author}</p>
+                        <p>価格: ¥${book.price}</p>
+                        <p>${book.description}</p>
+                    `;
+                    shelfDiv.appendChild(bookDiv);
+                });
+                resultsDiv.appendChild(shelfDiv);
+            }
+        }
+    </script>
+</body>
+</html>
