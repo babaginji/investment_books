@@ -130,18 +130,19 @@ h1 {
 ----------------------------- */
 .books-container {
     display: grid;
-    gap: 15px;
+    gap: 10px;
     padding: 10px;
     margin: 0;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
 }
 
 /* 本カード1冊 */
 .books-container .book {
     background: #f9f9f9;
-    padding: 10px;
+    padding: 8px;
     border-radius: 6px;
     text-align: center;
-    position: relative; /* ★用 */
+    position: relative; /* 星用 */
 }
 
 .books-container .book img {
@@ -151,8 +152,8 @@ h1 {
 }
 
 .books-container .book h3 {
-    font-size: 14px;
-    margin: 5px 0 2px;
+    font-size: 13px;
+    margin: 4px 0 2px;
 }
 
 .books-container .book p {
@@ -169,26 +170,25 @@ h1 {
 }
 
 /* -----------------------------
-   レスポンシブ: 列数調整
+   レスポンシブ: スマホは4列確保
 ----------------------------- */
-/* スマホ: 4列 */
 @media (max-width: 600px) {
     .books-container {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
-/* タブレット: 3列 */
+/* タブレット: 幅に応じてカードを大きく/列数自動調整 */
 @media (min-width: 601px) and (max-width: 1024px) {
     .books-container {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     }
 }
 
-/* PC: 6列 */
+/* PC: 幅に応じて列数自動調整 */
 @media (min-width: 1025px) {
     .books-container {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 }
 
