@@ -5,56 +5,48 @@
     <title>投資本棚</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 </head>
 <body>
     <h1>投資本棚</h1>
 
-    <!-- 検索窓（最上部） -->
-<div id="search-panel">
-    <input type="text" id="title" placeholder="本のタイトルを検索">
-    <button onclick="searchBook()">検索</button>
-</div>
-
-<!-- 検索履歴ボックス -->
-<div id="search-history-box" style="display:none;"></div>
-
-<!-- 検索結果表示 -->
-<div id="search-results" class="books-container"></div>
-
-
-    
-    <!-- 棚リンク一覧（固定画像リンク） -->
-    <h2>棚リンク一覧</h2>
-<div class="shelf-links">
-    <!-- まず「私の本棚」を先に表示 -->
-    {% if "私の本棚" in shelves %}
-    <div class="shelf-link">
-        <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">
-            <img src="{{ url_for('static', filename='images/私の本棚.jpg') }}" alt="私の本棚">
-            <p>私の本棚</p>
-        </a>
+    <!-- 検索窓 -->
+    <div id="search-panel">
+        <input type="text" id="title" placeholder="本のタイトルを検索">
+        <button onclick="searchBook()">検索</button>
     </div>
-    {% endif %}
 
-    <!-- 残りの棚を順に表示 -->
-    {% for shelf in shelves %}
-        {% if shelf != "私の本棚" %}
+    <!-- 検索履歴ボックス -->
+    <div id="search-history-box" style="display:none;"></div>
+
+    <!-- 検索結果表示 -->
+    <div id="search-results" class="books-container"></div>
+
+    <!-- 棚リンク一覧 -->
+    <h2>棚リンク一覧</h2>
+    <div class="shelf-links">
+        {% if "私の本棚" in shelves %}
         <div class="shelf-link">
-            <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">
-                <img src="{{ url_for('static', filename='images/' + shelf + '.jpg') }}" alt="{{ shelf }}">
-                <p>{{ shelf }}</p>
+            <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">
+                <img src="{{ url_for('static', filename='images/私の本棚.jpg') }}" alt="私の本棚">
+                <p>私の本棚</p>
             </a>
         </div>
         {% endif %}
-    {% endfor %}
-</div>
 
+        {% for shelf in shelves %}
+            {% if shelf != "私の本棚" %}
+            <div class="shelf-link">
+                <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">
+                    <img src="{{ url_for('static', filename='images/' + shelf + '.jpg') }}" alt="{{ shelf }}">
+                    <p>{{ shelf }}</p>
+                </a>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
 
-
-    <!-- 検索結果 -->
+    <!-- 検索結果（JSで生成する本カード） -->
     <div id="search-results" class="books-container"></div>
-
     <script>
         let searchResults = [];
         let myShelf = [];
@@ -86,10 +78,10 @@
                 const bookDiv = document.createElement("div");
                 bookDiv.className = "book";
         
+                // 星★
                 const star = document.createElement("span");
                 star.className = "star";
                 star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
-        
                 star.onclick = async (e) => {
                     e.stopPropagation();
                     if (star.textContent === "☆") {
@@ -114,15 +106,36 @@
                     }
                 };
         
+                // 本カードHTML
                 bookDiv.innerHTML = `
                     <div class="book-image-wrapper">
                         <img src="${book.image}" alt="${book.title}">
                     </div>
-                    <h3>${book.title}</h3>
-                    <p>著者: ${book.author}</p>
-                    <p>価格: ¥${book.price}</p>
+                    <span class="toggle-btn">詳細を見る</span>
+                    <div class="book-details">
+                        <p>価格: ¥${book.price}</p>
+                        <p>図書館API: 仮情報</p>
+                        <p>アマゾン関連情報: 仮情報</p>
+                        <p>内容紹介: 仮情報</p>
+                    </div>
                 `;
+        
+                // 星★を画像ラッパーに追加
                 bookDiv.querySelector(".book-image-wrapper").appendChild(star);
+        
+                // 詳細トグル
+                const toggleBtn = bookDiv.querySelector(".toggle-btn");
+                const detailsDiv = bookDiv.querySelector(".book-details");
+                toggleBtn.addEventListener("click", () => {
+                    if (detailsDiv.style.display === "none" || detailsDiv.style.display === "") {
+                        detailsDiv.style.display = "block";
+                        toggleBtn.textContent = "詳細を隠す";
+                    } else {
+                        detailsDiv.style.display = "none";
+                        toggleBtn.textContent = "詳細を見る";
+                    }
+                });
+        
                 resultsDiv.appendChild(bookDiv);
             });
         }
@@ -139,6 +152,7 @@
                 const bookDiv = document.createElement("div");
                 bookDiv.className = "book";
         
+                // 星★
                 const star = document.createElement("span");
                 star.className = "star";
                 star.textContent = "★";
@@ -154,15 +168,35 @@
                     displaySearchResults();
                 };
         
+                // 本カードHTML
                 bookDiv.innerHTML = `
                     <div class="book-image-wrapper">
                         <img src="${book.image}" alt="${book.title}">
                     </div>
-                    <h3>${book.title}</h3>
-                    <p>著者: ${book.author}</p>
-                    <p>価格: ¥${book.price}</p>
+                    <span class="toggle-btn">詳細を見る</span>
+                    <div class="book-details">
+                        <p>価格: ¥${book.price}</p>
+                        <p>図書館API: 仮情報</p>
+                        <p>アマゾン関連情報: 仮情報</p>
+                        <p>内容紹介: 仮情報</p>
+                    </div>
                 `;
+        
                 bookDiv.querySelector(".book-image-wrapper").appendChild(star);
+        
+                // 詳細トグル
+                const toggleBtn = bookDiv.querySelector(".toggle-btn");
+                const detailsDiv = bookDiv.querySelector(".book-details");
+                toggleBtn.addEventListener("click", () => {
+                    if (detailsDiv.style.display === "none" || detailsDiv.style.display === "") {
+                        detailsDiv.style.display = "block";
+                        toggleBtn.textContent = "詳細を隠す";
+                    } else {
+                        detailsDiv.style.display = "none";
+                        toggleBtn.textContent = "詳細を見る";
+                    }
+                });
+        
                 myShelfDiv.appendChild(bookDiv);
             });
         }
@@ -203,7 +237,7 @@
                 return;
             }
         
-            box.style.display = "block"; // 常に入力可能なら表示
+            box.style.display = "block";
         
             box.innerHTML = "";
             history.forEach(item => {
@@ -221,8 +255,8 @@
                 const btn = document.createElement("button");
                 btn.className = "delete-btn";
                 btn.textContent = "×";
-                btn.style.padding = "10px";       // タップしやすいサイズ
-                btn.style.fontSize = "16px";      
+                btn.style.padding = "10px";
+                btn.style.fontSize = "16px";
                 btn.onclick = (e) => {
                     e.stopPropagation();
                     deleteHistory(item);
@@ -260,7 +294,6 @@
             input.addEventListener("focus", () => displayHistory());
             input.addEventListener("input", () => displayHistory());
         
-            // 履歴ボックス内クリック時も消えない
             historyBox.addEventListener("mousedown", (e) => e.preventDefault());
         
             input.addEventListener("blur", () => {
