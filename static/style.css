@@ -184,6 +184,7 @@ h1 {
    レスポンシブ対応
 ----------------------------- */
 
+
 /* スマホ */
 @media (max-width: 600px) {
 
@@ -193,25 +194,44 @@ h1 {
         gap: 5px;
         justify-content: flex-start;
         align-items: center;
+        width: 100%;
     }
+
     #search-panel input { 
-        width: 50%; 
-        min-width: 0;
+        width: 50%;          /* 横幅50% */
+        height: 40px;        /* 高さ2倍（元は20pxくらい） */
+        font-size: 16px;
+        padding: 5px 10px;
+        box-sizing: border-box;
     }
+
     #search-panel button { 
-        width: auto; 
+        height: 40px;        /* 検索窓と同じ高さ */
+        font-size: 16px;
+        padding: 0 10px;
+        flex: 0 0 auto;
     }
 
     /* 検索結果の本カード */
-    .book { width: calc(100% / 2.5 - 10px); } /* 横2.5冊分 */
+    .book { 
+        width: calc(100% / 2.5 - 10px); /* 横2.5冊分 */
+    }
 
     /* 棚リンクは2列 */
-    .shelf-links { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .shelf-link img { height: 120px; }
+    .shelf-links { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 10px; 
+    }
+
+    .shelf-link img { 
+        height: 120px; 
+        object-fit: cover;
+    }
 
     /* 本棚表示も2列 */
     .books-container { gap: 10px; }
 }
+
 
 /* タブレット */
 @media (max-width: 1024px) {
