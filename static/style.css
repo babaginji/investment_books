@@ -37,13 +37,12 @@ h1 {
     cursor: pointer;
 }
 
-
 /* -----------------------------
    検索履歴ボックス
 ----------------------------- */
 #search-history-box {
-    width: 100%;                    /* 検索窓と同じ幅に */
-    max-width: 100%;                /* 画面幅に収める */
+    width: 100%;               
+    max-width: 100%;           
     max-height: 250px;               
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid #ccc;
@@ -55,7 +54,6 @@ h1 {
     z-index: 1000;                   
     display: none;                   
 }
-
 
 .history-item {
     display: flex;
@@ -128,29 +126,37 @@ h1 {
 }
 
 /* -----------------------------
-   本棚内の本カードコンテナ & 検索結果
+   本棚内の本カードコンテナ
 ----------------------------- */
-.books-container,
-#search-results {
+.books-container {
     display: flex;
     overflow-x: auto;
-    gap: 15px;          /* 本同士の間隔 */
-    padding: 0;         /* 端の余白をなくす */
-    margin: 0;          /* 外側の余白もなくす */
+    gap: 15px;     
+    padding: 0;     
+    margin: 0;      
     scroll-behavior: smooth;
 }
 
+/* -----------------------------
+   検索結果（端いっぱい）
+----------------------------- */
+#search-results {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 0;     
+    margin: 0;      
+    scroll-behavior: smooth;
+    width: 100vw;   /* 横いっぱい */
+}
+
 /* 横スクロール時に端までカードを詰める */
-.books-container .book:first-child,
 #search-results .book:first-child {
     margin-left: 0;
 }
-
-.books-container .book:last-child,
 #search-results .book:last-child {
     margin-right: 0;
 }
-
 
 /* -----------------------------
    本カード1冊
@@ -185,9 +191,10 @@ h1 {
     font-size: 14px; 
     margin: 3px 0; 
 }
+
 /* トグル詳細用 */
 .book-details {
-    display: none;        /* 初期は非表示 */
+    display: none;        
     text-align: left;
     font-size: 14px;
     margin-top: 5px;
@@ -217,18 +224,17 @@ h1 {
 /* -----------------------------
    レスポンシブ対応
 ----------------------------- */
-
 /* スマホ */
 @media (max-width: 600px) {
     #search-panel {
         flex-direction: row;
-        width: 100%;  /* 親幅100% */
+        width: 100%;
         gap: 5px;
     }
 
     #search-panel input {
-        width: 50%;    /* 横幅50% */
-        height: 40px;  /* 高さ2倍 */
+        width: 50%;
+        height: 40px;
     }
 
     #search-panel button {
@@ -247,8 +253,11 @@ h1 {
     #search-results .book {
         width: calc(100% / 2.5 - 10px); /* 横2.5冊分 */
     }
-}
 
+    #search-history-box {
+        width: 100%;
+    }
+}
 
 /* タブレット */
 @media (max-width: 1024px) {
