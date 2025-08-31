@@ -133,7 +133,7 @@ h1 {
     gap: 10px;
     padding: 10px;
     margin: 0;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
 /* 本カード1冊 */
@@ -170,25 +170,25 @@ h1 {
 }
 
 /* -----------------------------
-   レスポンシブ: スマホは4列確保
+   レスポンシブ: スマホは3列固定
 ----------------------------- */
 @media (max-width: 600px) {
     .books-container {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 /* タブレット: 幅に応じてカードを大きく/列数自動調整 */
 @media (min-width: 601px) and (max-width: 1024px) {
     .books-container {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 }
 
 /* PC: 幅に応じて列数自動調整 */
 @media (min-width: 1025px) {
     .books-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     }
 }
 
@@ -196,7 +196,6 @@ h1 {
 body {
     overflow-x: hidden;
 }
-
 
 /* -----------------------------
    検索結果（端いっぱい）
