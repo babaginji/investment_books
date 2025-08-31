@@ -194,7 +194,8 @@ h1 {
         gap: 5px;
         justify-content: flex-start;
         align-items: center;
-        width: 100%;
+        width: 50%;
+        height: 40px; 
     }
 
     #search-panel input { 
