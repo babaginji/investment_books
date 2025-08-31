@@ -147,7 +147,7 @@ h1 {
     padding: 0;     
     margin: 0;      
     scroll-behavior: smooth;
-    width: 100vw;   /* 横いっぱい */
+    width: 100%;   /* 横いっぱい */
 }
 
 /* 横スクロール時に端までカードを詰める */
