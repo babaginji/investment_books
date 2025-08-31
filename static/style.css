@@ -141,7 +141,7 @@ h1 {
    検索結果（端いっぱい）
 ----------------------------- */
 #search-results-wrapper {
-    width: 100vw;
+    width: 100%;
     margin: 0;
     padding: 0;
     overflow-x: hidden;  /* 全体横スクロール防止 */
