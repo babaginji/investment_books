@@ -65,7 +65,6 @@
             const books = await res.json();
             searchResults = books;
         
-            // 検索結果を localStorage に保存
             localStorage.setItem('lastSearch', JSON.stringify({
                 title: title,
                 books: books
@@ -132,13 +131,14 @@
         
                 bookDiv.appendChild(imgWrapper);
         
-                // 詳細情報
+                // 詳細情報（ドグル内）
                 const detailsDiv = document.createElement("div");
                 detailsDiv.className = "book-details";
+                detailsDiv.style.display = "none"; // 初期は非表示
                 detailsDiv.innerHTML = `
-                    <p>タイトル: ${book.title}</p>
-                    <p>著者: ${book.author}</p>
                     <p>価格: ¥${book.price}</p>
+                    <p>図書館API: 仮情報</p>
+                    <p>アマゾン関連情報: 仮情報</p>
                     <p>内容紹介: 仮情報</p>
                 `;
         
@@ -207,10 +207,11 @@
         
                 const detailsDiv = document.createElement("div");
                 detailsDiv.className = "book-details";
+                detailsDiv.style.display = "none"; // 初期非表示
                 detailsDiv.innerHTML = `
-                    <p>タイトル: ${book.title}</p>
-                    <p>著者: ${book.author}</p>
                     <p>価格: ¥${book.price}</p>
+                    <p>図書館API: 仮情報</p>
+                    <p>アマゾン関連情報: 仮情報</p>
                     <p>内容紹介: 仮情報</p>
                 `;
         
