@@ -202,72 +202,85 @@
         }
         
         // -----------------------------
-        // 検索履歴管理
-        // -----------------------------
-        function getHistory() {
-            return JSON.parse(localStorage.getItem("searchHistory") || "[]");
-        }
-        
-        function saveHistory(history) {
-            localStorage.setItem("searchHistory", JSON.stringify(history));
-        }
-        
-        function addHistory(title) {
-            let history = getHistory();
-            history = history.filter(item => item !== title);
-            history.unshift(title);
-            if (history.length > 20) history = history.slice(0, 20);
-            saveHistory(history);
-            displayHistory();
-        }
-        
-        function deleteHistory(title) {
-            let history = getHistory().filter(item => item !== title);
-            saveHistory(history);
-            displayHistory();
-        }
-        
-        function displayHistory() {
-            const box = document.getElementById("search-history-box");
-            const input = document.getElementById("title");
-            const history = getHistory();
-        
-            if (history.length === 0) {
-                box.style.display = "none";
-                return;
-            }
-        
-            box.style.display = "block";
-        
-            box.innerHTML = "";
-            history.forEach(item => {
-                const div = document.createElement("div");
-                div.className = "history-item";
-        
-                const span = document.createElement("span");
-                span.className = "history-title";
-                span.textContent = item;
-                span.onclick = () => {
-                    input.value = item;
-                    searchBook();
-                };
-        
-                const btn = document.createElement("button");
-                btn.className = "delete-btn";
-                btn.textContent = "×";
-                btn.style.padding = "10px";
-                btn.style.fontSize = "16px";
-                btn.onclick = (e) => {
-                    e.stopPropagation();
-                    deleteHistory(item);
-                };
-        
-                div.appendChild(span);
-                div.appendChild(btn);
-                box.appendChild(div);
-            });
-        }
-        
+// 検索履歴管理
+// -----------------------------
+function getHistory() {
+    return JSON.parse(localStorage.getItem("searchHistory") || "[]");
+}
+
+function saveHistory(history) {
+    localStorage.setItem("searchHistory", JSON.stringify(history));
+}
+
+function addHistory(title) {
+    let history = getHistory();
+    history = history.filter(item => item !== title);
+    history.unshift(title);
+    if (history.length > 20) history = history.slice(0, 20);
+    saveHistory(history);
+    displayHistory();
+}
+
+function deleteHistory(title) {
+    let history = getHistory().filter(item => item !== title);
+    saveHistory(history);
+    displayHistory();
+}
+
+function displayHistory() {
+    const box = document.getElementById("search-history-box");
+    const input = document.getElementById("title");
+    const history = getHistory();
+
+    if (history.length === 0 || document.activeElement !== input) {
+        box.style.display = "none";
+        return;
+    }
+
+    // 検索窓と同じ幅・位置にする
+    const rect = input.getBoundingClientRect();
+    box.style.width = rect.width + "px";
+    box.style.left = rect.left + "px";
+
+    box.style.display = "block";
+
+    box.innerHTML = "";
+    history.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+
+        const span = document.createElement("span");
+        span.className = "history-title";
+        span.textContent = item;
+        span.onclick = () => {
+            input.value = item;
+            searchBook();
+        };
+
+        const btn = document.createElement("button");
+        btn.className = "delete-btn";
+        btn.textContent = "×";
+        btn.style.padding = "10px";
+        btn.style.fontSize = "16px";
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            deleteHistory(item);
+        };
+
+        div.appendChild(span);
+        div.appendChild(btn);
+        box.appendChild(div);
+    });
+}
+
+// inputイベントで履歴表示
+const input = document.getElementById("title");
+input.addEventListener("focus", displayHistory);
+input.addEventListener("input", displayHistory);
+input.addEventListener("blur", () => {
+    setTimeout(() => { document.getElementById("search-history-box").style.display = "none"; }, 200);
+});
+
         // -----------------------------
         // 初期ロード & イベント
         // -----------------------------
