@@ -188,47 +188,35 @@ h1 {
 
 /* スマホ */
 @media (max-width: 600px) {
-
-    /* 検索窓 */
     #search-panel {
         flex-direction: row;
-        width: 100%;
+        width: 100%;  /* 親幅100% */
         gap: 5px;
-        justify-content: flex-start;
     }
 
-    #search-panel input { 
-        width: 50%;          /* 横幅50% */
-        height: 40px;        /* 高さ2倍 */
-        font-size: 16px;
-        padding: 0 10px;
+    #search-panel input {
+        width: 50%;    /* 横幅50% */
+        height: 40px;  /* 高さ2倍 */
     }
 
-    #search-panel button { 
-        height: 40px;        /* 入力と同じ高さ */
-        font-size: 16px;
-        padding: 0 10px;
+    #search-panel button {
+        height: 40px;
     }
 
-    /* 検索結果 */
-    #search-results .book {
-        width: calc(100% / 2.5 - 10px); /* 横2.5冊分 */
-    }
-
-    /* 棚リンク2列 */
     .shelf-links {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
-    .shelf-link img {
-        height: 120px;
+
+    .books-container .book {
+        width: calc(50% - 10px); /* 横2列 */
     }
 
-    /* 本棚表示も2列 */
-    .books-container .book {
-        width: calc(50% - 10px);
+    #search-results .book {
+        width: calc(100% / 2.5 - 10px); /* 横2.5冊分 */
     }
 }
+
 
 /* タブレット */
 @media (max-width: 1024px) {
