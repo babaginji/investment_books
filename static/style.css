@@ -15,31 +15,32 @@ h1 {
    検索窓
 ----------------------------- */
 #search-panel {
-    margin-bottom: 0; /* 履歴ボックスとくっつけるので余白なし */
-    position: relative; /* 履歴ボックスを相対配置 */
     display: flex;
-    flex-wrap: wrap;
     gap: 5px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
 }
 
 #search-panel input {
     flex: 1 1 auto;
-    padding: 8px;
-    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
     min-width: 200px;
+    box-sizing: border-box;
 }
 
 #search-panel button {
-    padding: 8px 12px;
     flex: 0 0 auto;
+    padding: 10px 15px;
+    font-size: 16px;
 }
 
 /* -----------------------------
    検索履歴ボックス
 ----------------------------- */
 #search-history-box {
-    width: 100%;                   
-    max-height: 250px;              
+    width: 100%;
+    max-height: 250px;
     background: rgba(255, 255, 255, 0.95);
     border: 1px solid #ccc;
     border-radius: 6px;
@@ -94,14 +95,12 @@ h1 {
 
 /* -----------------------------
    トップページ: 棚リンク一覧
-   グリッドで列数自動調整
 ----------------------------- */
 .shelf-links {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 15px;
     margin-bottom: 30px;
-    width: 100%;
 }
 
 .shelf-link {
@@ -127,30 +126,32 @@ h1 {
 /* -----------------------------
    本棚内の本カードコンテナ
 ----------------------------- */
-.books-container {
-    display: flex;             
-    overflow-x: auto;          
-    gap: 15px;                 
-    padding: 10px 0;           
+.books-container,
+#search-results {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px 0;
+    scroll-behavior: smooth;
 }
 
 /* -----------------------------
    本カード1冊
 ----------------------------- */
 .book {
-    flex: 0 0 auto;            
-    width: 150px;              
-    text-align: center;        
-    border: 1px solid #ccc;    
-    border-radius: 5px;        
-    padding: 10px;             
-    background-color: #f9f9f9; 
-    transition: transform 0.2s; 
-    position: relative;        /* ☆マークの位置調整用 */
+    flex: 0 0 auto;
+    width: 150px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    position: relative;
+    transition: transform 0.2s;
 }
 
 .book:hover {
-    transform: translateY(-5px); 
+    transform: translateY(-5px);
 }
 
 .book img { 
@@ -169,47 +170,15 @@ h1 {
 }
 
 /* -----------------------------
-   ページネーション
------------------------------ */
-.pagination {
-    margin: 10px 0;           
-    text-align: center;       
-}
-
-.pagination button {
-    padding: 5px 10px;        
-    margin: 0 5px;            
-}
-
-/* -----------------------------
-   検索結果
-   横並び表示
------------------------------ */
-#search-results {
-    display: flex;
-    overflow-x: auto; /* 横スクロール可能 */
-    gap: 15px;        /* 本同士の間隔 */
-    padding: 10px 0;
-}
-
-#search-results .book {
-    flex: 0 0 auto;   /* 横並びで幅固定 */
-    width: 150px;
-    text-align: center;
-    position: relative; /* ☆マークの位置調整用 */
-}
-
-/* -----------------------------
    ☆マーク
 ----------------------------- */
-#search-results .book .star,
 .book .star {
     position: absolute;
     top: 5px;
     right: 5px;
-    cursor: pointer;
     font-size: 18px;
     color: gold;
+    cursor: pointer;
 }
 
 /* -----------------------------
@@ -218,50 +187,19 @@ h1 {
 
 /* タブレット */
 @media (max-width: 1024px) {
-    .books-container, #search-results {
-        gap: 12px;
-    }
-
-    .book {
-        width: 120px;
-    }
-
-    .shelf-links {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 12px;
-    }
-
-    .shelf-link img {
-        height: 120px;
-    }
+    .book { width: 130px; }
+    .shelf-links { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+    .shelf-link img { height: 130px; }
 }
 
 /* スマホ */
 @media (max-width: 600px) {
-    #search-panel {
-        flex-direction: column;
-    }
+    #search-panel { flex-direction: column; gap: 5px; }
+    #search-panel input, #search-panel button { width: 100%; }
 
-    #search-panel input, #search-panel button {
-        width: 100%;
-        font-size: 16px;
-        padding: 10px;
-    }
+    .book { width: calc(100% / 2.5 - 10px); } /* 横2.5冊 */
+    .books-container, #search-results { gap: 10px; }
 
-    .books-container, #search-results {
-        gap: 10px;
-    }
-
-    .book {
-        width: calc(100% / 2.5 - 10px); /* 横2.5冊分 */
-    }
-
-    .shelf-links {
-        grid-template-columns: repeat(2, 1fr); /* 横2列 */
-        gap: 10px;
-    }
-
-    .shelf-link img {
-        height: 120px;
-    }
+    .shelf-links { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .shelf-link img { height: 120px; }
 }
