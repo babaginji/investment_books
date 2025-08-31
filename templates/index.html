@@ -108,26 +108,38 @@
                     }
                 };
         
-                // 本カードHTML
-                bookDiv.innerHTML = `
-                    <div class="book-image-wrapper">
-                        <img src="${book.image}" alt="${book.title}">
-                    </div>
-                    <span class="toggle-btn">詳細を見る</span>
-                    <div class="book-details">
-                        <p>価格: ¥${book.price}</p>
-                        <p>図書館API: 仮情報</p>
-                        <p>アマゾン関連情報: 仮情報</p>
-                        <p>内容紹介: 仮情報</p>
-                    </div>
+                // 画像を楽天ブックスリンクで囲む
+                const imgLink = document.createElement("a");
+                imgLink.href = book.itemUrl;  // 楽天ブックスURL
+                imgLink.target = "_blank";
+        
+                const img = document.createElement("img");
+                img.src = book.image;
+                img.alt = book.title;
+        
+                imgLink.appendChild(img);
+        
+                const imgWrapper = document.createElement("div");
+                imgWrapper.className = "book-image-wrapper";
+                imgWrapper.appendChild(imgLink);
+                imgWrapper.appendChild(star);
+        
+                // 本カードに画像ラッパーを追加
+                bookDiv.appendChild(imgWrapper);
+        
+                // 詳細情報
+                const detailsDiv = document.createElement("div");
+                detailsDiv.className = "book-details";
+                detailsDiv.innerHTML = `
+                    <p>タイトル: ${book.title}</p>
+                    <p>著者: ${book.author}</p>
+                    <p>価格: ¥${book.price}</p>
+                    <p>内容紹介: 仮情報</p>
                 `;
         
-                // 星★を画像ラッパーに追加
-                bookDiv.querySelector(".book-image-wrapper").appendChild(star);
-        
-                // 詳細トグル
-                const toggleBtn = bookDiv.querySelector(".toggle-btn");
-                const detailsDiv = bookDiv.querySelector(".book-details");
+                const toggleBtn = document.createElement("span");
+                toggleBtn.className = "toggle-btn";
+                toggleBtn.textContent = "詳細を見る";
                 toggleBtn.addEventListener("click", () => {
                     if (detailsDiv.style.display === "none" || detailsDiv.style.display === "") {
                         detailsDiv.style.display = "block";
@@ -137,6 +149,9 @@
                         toggleBtn.textContent = "詳細を見る";
                     }
                 });
+        
+                bookDiv.appendChild(toggleBtn);
+                bookDiv.appendChild(detailsDiv);
         
                 resultsDiv.appendChild(bookDiv);
             });
@@ -170,25 +185,35 @@
                     displaySearchResults();
                 };
         
-                // 本カードHTML
-                bookDiv.innerHTML = `
-                    <div class="book-image-wrapper">
-                        <img src="${book.image}" alt="${book.title}">
-                    </div>
-                    <span class="toggle-btn">詳細を見る</span>
-                    <div class="book-details">
-                        <p>価格: ¥${book.price}</p>
-                        <p>図書館API: 仮情報</p>
-                        <p>アマゾン関連情報: 仮情報</p>
-                        <p>内容紹介: 仮情報</p>
-                    </div>
+                // 画像リンク
+                const imgLink = document.createElement("a");
+                imgLink.href = book.itemUrl;
+                imgLink.target = "_blank";
+        
+                const img = document.createElement("img");
+                img.src = book.image;
+                img.alt = book.title;
+                imgLink.appendChild(img);
+        
+                const imgWrapper = document.createElement("div");
+                imgWrapper.className = "book-image-wrapper";
+                imgWrapper.appendChild(imgLink);
+                imgWrapper.appendChild(star);
+        
+                bookDiv.appendChild(imgWrapper);
+        
+                const detailsDiv = document.createElement("div");
+                detailsDiv.className = "book-details";
+                detailsDiv.innerHTML = `
+                    <p>タイトル: ${book.title}</p>
+                    <p>著者: ${book.author}</p>
+                    <p>価格: ¥${book.price}</p>
+                    <p>内容紹介: 仮情報</p>
                 `;
         
-                bookDiv.querySelector(".book-image-wrapper").appendChild(star);
-        
-                // 詳細トグル
-                const toggleBtn = bookDiv.querySelector(".toggle-btn");
-                const detailsDiv = bookDiv.querySelector(".book-details");
+                const toggleBtn = document.createElement("span");
+                toggleBtn.className = "toggle-btn";
+                toggleBtn.textContent = "詳細を見る";
                 toggleBtn.addEventListener("click", () => {
                     if (detailsDiv.style.display === "none" || detailsDiv.style.display === "") {
                         detailsDiv.style.display = "block";
@@ -199,90 +224,82 @@
                     }
                 });
         
+                bookDiv.appendChild(toggleBtn);
+                bookDiv.appendChild(detailsDiv);
+        
                 myShelfDiv.appendChild(bookDiv);
             });
         }
         
         // -----------------------------
-// 検索履歴管理
-// -----------------------------
-function getHistory() {
-    return JSON.parse(localStorage.getItem("searchHistory") || "[]");
-}
-
-function saveHistory(history) {
-    localStorage.setItem("searchHistory", JSON.stringify(history));
-}
-
-function addHistory(title) {
-    let history = getHistory();
-    history = history.filter(item => item !== title);
-    history.unshift(title);
-    if (history.length > 20) history = history.slice(0, 20);
-    saveHistory(history);
-    displayHistory();
-}
-
-function deleteHistory(title) {
-    let history = getHistory().filter(item => item !== title);
-    saveHistory(history);
-    displayHistory();
-}
-
-function displayHistory() {
-    const box = document.getElementById("search-history-box");
-    const input = document.getElementById("title");
-    const history = getHistory();
-
-    if (history.length === 0 || document.activeElement !== input) {
-        box.style.display = "none";
-        return;
-    }
-
-    // 検索窓と同じ幅・位置にする
-    const rect = input.getBoundingClientRect();
-    box.style.width = rect.width + "px";
-    box.style.left = rect.left + "px";
-
-    box.style.display = "block";
-
-    box.innerHTML = "";
-    history.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "history-item";
-
-        const span = document.createElement("span");
-        span.className = "history-title";
-        span.textContent = item;
-        span.onclick = () => {
-            input.value = item;
-            searchBook();
-        };
-
-        const btn = document.createElement("button");
-        btn.className = "delete-btn";
-        btn.textContent = "×";
-        btn.style.padding = "10px";
-        btn.style.fontSize = "16px";
-        btn.onclick = (e) => {
-            e.stopPropagation();
-            deleteHistory(item);
-        };
-
-        div.appendChild(span);
-        div.appendChild(btn);
-        box.appendChild(div);
-    });
-}
-
-// inputイベントで履歴表示
-const input = document.getElementById("title");
-input.addEventListener("focus", displayHistory);
-input.addEventListener("input", displayHistory);
-input.addEventListener("blur", () => {
-    setTimeout(() => { document.getElementById("search-history-box").style.display = "none"; }, 200);
-});
-
+        // 検索履歴管理
+        // -----------------------------
+        function getHistory() {
+            return JSON.parse(localStorage.getItem("searchHistory") || "[]");
+        }
+        
+        function saveHistory(history) {
+            localStorage.setItem("searchHistory", JSON.stringify(history));
+        }
+        
+        function addHistory(title) {
+            let history = getHistory();
+            history = history.filter(item => item !== title);
+            history.unshift(title);
+            if (history.length > 20) history = history.slice(0, 20);
+            saveHistory(history);
+            displayHistory();
+        }
+        
+        function deleteHistory(title) {
+            let history = getHistory().filter(item => item !== title);
+            saveHistory(history);
+            displayHistory();
+        }
+        
+        function displayHistory() {
+            const box = document.getElementById("search-history-box");
+            const input = document.getElementById("title");
+            const history = getHistory();
+        
+            if (history.length === 0 || document.activeElement !== input) {
+                box.style.display = "none";
+                return;
+            }
+        
+            const rect = input.getBoundingClientRect();
+            box.style.width = rect.width + "px";
+            box.style.left = rect.left + "px";
+        
+            box.style.display = "block";
+            box.innerHTML = "";
+        
+            history.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "history-item";
+        
+                const span = document.createElement("span");
+                span.className = "history-title";
+                span.textContent = item;
+                span.onclick = () => {
+                    input.value = item;
+                    searchBook();
+                };
+        
+                const btn = document.createElement("button");
+                btn.className = "delete-btn";
+                btn.textContent = "×";
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteHistory(item);
+                };
+        
+                div.appendChild(span);
+                div.appendChild(btn);
+                box.appendChild(div);
+            });
+        }
+        
         // -----------------------------
         // 初期ロード & イベント
         // -----------------------------
