@@ -128,16 +128,29 @@ h1 {
 }
 
 /* -----------------------------
-   本棚内の本カードコンテナ
+   本棚内の本カードコンテナ & 検索結果
 ----------------------------- */
 .books-container,
 #search-results {
     display: flex;
     overflow-x: auto;
-    gap: 15px;
-    padding: 10px 0;
+    gap: 15px;          /* 本同士の間隔 */
+    padding: 0;         /* 端の余白をなくす */
+    margin: 0;          /* 外側の余白もなくす */
     scroll-behavior: smooth;
 }
+
+/* 横スクロール時に端までカードを詰める */
+.books-container .book:first-child,
+#search-results .book:first-child {
+    margin-left: 0;
+}
+
+.books-container .book:last-child,
+#search-results .book:last-child {
+    margin-right: 0;
+}
+
 
 /* -----------------------------
    本カード1冊
