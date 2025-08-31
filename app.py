@@ -1,60 +1,66 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import json
+import os
+from urllib.parse import unquote
 
 app = Flask(__name__)
 
-# 楽天API設定
 RAKUTEN_APP_ID = "1077795699367532233"
+DATA_FILE = "data/shelves.json"
 
-# 投資タイプとキーワードルール
-KEYWORDS = {
-    "積立安定型": ["インデックス", "積立", "ETF"],
-    "ステーキング運用型": ["ステーキング", "暗号資産", "仮想通貨"],
-    "アクティブチャレンジ型": ["短期売買", "トレード", "デイトレ"],
-    "株式アクティブ型": ["個別株", "株式投資"],
-    "ハイリスクハイリターン型": ["仮想通貨", "高リスク"],
-    "テクノロジー志向型": ["ブロックチェーン", "NFT", "Web3"],
-    "積立応用型": ["高配当株", "配当投資"],
-    "貯蓄優先型": ["貯蓄", "資産運用"],
-}
+SHELVES = [
+    "貯蓄優先型",
+    "積立安定型",
+    "アクティブチャレンジ型",
+    "ステーキング運用型",
+    "株式アクティブ型",
+    "ハイリスクハイリターン型",
+    "テクノロジー志向型",
+    "積立応用型",
+    "私の本棚",
+]
 
-# 本の手動タグデータをロード（例: data/books.json）
-try:
-    with open("data/books.json", "r", encoding="utf-8") as f:
-        MANUAL_TAGS = json.load(f)  # {"本タイトル": "投資タイプ"}
-except FileNotFoundError:
-    MANUAL_TAGS = {}
-
-# キーワードルールで分類
-def classify_book(title, description):
-    # 手動タグがあればそれを優先
-    if title in MANUAL_TAGS:
-        return MANUAL_TAGS[title]
-
-    # キーワードルールで分類
-    for book_type, words in KEYWORDS.items():
-        if description:
-            for word in words:
-                if word in description or word in title:
-                    return book_type
-    return "未分類"
+# -----------------------------
+# JSON読み書き
+# -----------------------------
+def load_shelves():
+    if not os.path.exists(DATA_FILE):
+        data = {shelf: [] for shelf in SHELVES}
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
+def save_shelves(shelves):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(shelves, f, ensure_ascii=False, indent=2)
+
+
+# -----------------------------
+# トップページ
+# -----------------------------
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", shelves=SHELVES)
 
 
+# -----------------------------
+# 検索API（楽天）
+# -----------------------------
 @app.route("/search")
-def search():
+def search_books():
     title = request.args.get("title", "")
+    if not title:
+        return jsonify([])
+
     url = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404"
     params = {
         "applicationId": RAKUTEN_APP_ID,
         "title": title,
         "format": "json",
-        "hits": 5,
+        "hits": 20,
     }
     response = requests.get(url, params=params)
     data = response.json()
@@ -62,20 +68,78 @@ def search():
     books = []
     for item in data.get("Items", []):
         book_item = item["Item"]
-        book_type = classify_book(
-            book_item.get("title", ""), book_item.get("itemCaption", "")
-        )
         books.append(
             {
                 "title": book_item.get("title", ""),
                 "author": book_item.get("author", ""),
-                "price": book_item.get("itemPrice", ""),
+                "price": book_item.get("itemPrice", 0),
                 "image": book_item.get("largeImageUrl", ""),
                 "description": book_item.get("itemCaption", ""),
-                "type": book_type,
+                "itemUrl": book_item.get("itemUrl", ""),
             }
         )
     return jsonify(books)
+
+
+# -----------------------------
+# 「私の本棚」に追加
+# -----------------------------
+@app.route("/add_to_my_shelf", methods=["POST"])
+def add_to_my_shelf():
+    book = request.get_json().get("book")
+    if not book:
+        return jsonify({"error": "bookが指定されていません"}), 400
+
+    shelves = load_shelves()
+    if "私の本棚" not in shelves:
+        shelves["私の本棚"] = []
+
+    if not any(b["title"] == book["title"] for b in shelves["私の本棚"]):
+        shelves["私の本棚"].append(book)
+        save_shelves(shelves)
+
+    return jsonify({"my_shelf": shelves["私の本棚"]})
+
+
+# -----------------------------
+# 「私の本棚」削除
+# -----------------------------
+@app.route("/remove_from_my_shelf", methods=["POST"])
+def remove_from_my_shelf():
+    title = request.get_json().get("title")
+    if not title:
+        return jsonify({"error": "titleが指定されていません"}), 400
+
+    shelves = load_shelves()
+    shelves["私の本棚"] = [b for b in shelves.get("私の本棚", []) if b["title"] != title]
+    save_shelves(shelves)
+    return jsonify({"my_shelf": shelves["私の本棚"]})
+
+
+# -----------------------------
+# 「私の本棚」取得
+# -----------------------------
+@app.route("/get_my_shelf")
+def get_my_shelf():
+    shelves = load_shelves()
+    return jsonify({"my_shelf": shelves.get("私の本棚", [])})
+
+
+# -----------------------------
+# 各棚ページ
+# -----------------------------
+@app.route("/shelf/<path:shelf_name>")
+def shelf_page(shelf_name):
+    shelf_name = unquote(shelf_name)
+    shelves = load_shelves()
+    books = shelves.get(shelf_name, [])
+
+    # 追加: 現在ユーザーの「私の本棚」情報も渡す
+    my_shelf_books = shelves.get("私の本棚", [])
+
+    return render_template(
+        "shelf.html", shelf_name=shelf_name, books=books, my_shelf=my_shelf_books
+    )
 
 
 if __name__ == "__main__":

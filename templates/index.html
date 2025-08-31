@@ -7,42 +7,265 @@
 </head>
 <body>
     <h1>投資本棚</h1>
-    <input type="text" id="title" placeholder="本のタイトルを入力">
+
+    <!-- 検索窓（最上部） -->
+<div id="search-panel">
+    <input type="text" id="title" placeholder="本のタイトルを検索">
     <button onclick="searchBook()">検索</button>
-    <div id="results"></div>
+</div>
+
+<!-- 検索履歴ボックス -->
+<div id="search-history-box" style="display:none;"></div>
+
+<!-- 検索結果表示 -->
+<div id="search-results" class="books-container"></div>
+
+
+    
+    <!-- 棚リンク一覧（固定画像リンク） -->
+    <h2>棚リンク一覧</h2>
+<div class="shelf-links">
+    <!-- まず「私の本棚」を先に表示 -->
+    {% if "私の本棚" in shelves %}
+    <div class="shelf-link">
+        <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">
+            <img src="{{ url_for('static', filename='images/私の本棚.jpg') }}" alt="私の本棚">
+            <p>私の本棚</p>
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- 残りの棚を順に表示 -->
+    {% for shelf in shelves %}
+        {% if shelf != "私の本棚" %}
+        <div class="shelf-link">
+            <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">
+                <img src="{{ url_for('static', filename='images/' + shelf + '.jpg') }}" alt="{{ shelf }}">
+                <p>{{ shelf }}</p>
+            </a>
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+
+
+    <!-- 検索結果 -->
+    <div id="search-results" class="books-container"></div>
 
     <script>
+        let searchResults = [];
+        let myShelf = [];
+        
+        // -----------------------------
+        // 本を検索
+        // -----------------------------
         async function searchBook() {
-            const title = document.getElementById("title").value;
+            const titleInput = document.getElementById("title");
+            const title = titleInput.value.trim();
+            if (!title) return;
+        
             const res = await fetch(`/search?title=${encodeURIComponent(title)}`);
             const books = await res.json();
-            const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = "";
-
-            const shelves = {};
-            books.forEach(book => {
-                if (!shelves[book.type]) shelves[book.type] = [];
-                shelves[book.type].push(book);
-            });
-
-            for (const type in shelves) {
-                const shelfDiv = document.createElement("div");
-                shelfDiv.innerHTML = `<h2>${type}</h2>`;
-                shelves[type].forEach(book => {
-                    const bookDiv = document.createElement("div");
-                    bookDiv.className = "book";
-                    bookDiv.innerHTML = `
-                        <img src="${book.image}" alt="${book.title}" width="120">
-                        <h3>${book.title}</h3>
-                        <p>著者: ${book.author}</p>
-                        <p>価格: ¥${book.price}</p>
-                        <p>${book.description}</p>
-                    `;
-                    shelfDiv.appendChild(bookDiv);
-                });
-                resultsDiv.appendChild(shelfDiv);
-            }
+            searchResults = books;
+        
+            addHistory(title);
+            displaySearchResults();
         }
-    </script>
+        
+        // -----------------------------
+        // 検索結果表示
+        // -----------------------------
+        function displaySearchResults() {
+            const resultsDiv = document.getElementById("search-results");
+            resultsDiv.innerHTML = "";
+        
+            searchResults.forEach(book => {
+                const bookDiv = document.createElement("div");
+                bookDiv.className = "book";
+        
+                const star = document.createElement("span");
+                star.className = "star";
+                star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
+        
+                star.onclick = async (e) => {
+                    e.stopPropagation();
+                    if (star.textContent === "☆") {
+                        const res = await fetch(`/add_to_my_shelf`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ book })
+                        });
+                        const data = await res.json();
+                        myShelf = data.my_shelf;
+                        star.textContent = "★";
+                        displayMyShelf();
+                    } else {
+                        myShelf = myShelf.filter(b => b.title !== book.title);
+                        await fetch(`/remove_from_my_shelf`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ title: book.title })
+                        });
+                        star.textContent = "☆";
+                        displayMyShelf();
+                    }
+                };
+        
+                bookDiv.innerHTML = `
+                    <div class="book-image-wrapper">
+                        <img src="${book.image}" alt="${book.title}">
+                    </div>
+                    <h3>${book.title}</h3>
+                    <p>著者: ${book.author}</p>
+                    <p>価格: ¥${book.price}</p>
+                `;
+                bookDiv.querySelector(".book-image-wrapper").appendChild(star);
+                resultsDiv.appendChild(bookDiv);
+            });
+        }
+        
+        // -----------------------------
+        // 「私の本棚」を表示
+        // -----------------------------
+        function displayMyShelf() {
+            const myShelfDiv = document.getElementById("my-shelf-books");
+            if (!myShelfDiv) return;
+        
+            myShelfDiv.innerHTML = "";
+            myShelf.forEach(book => {
+                const bookDiv = document.createElement("div");
+                bookDiv.className = "book";
+        
+                const star = document.createElement("span");
+                star.className = "star";
+                star.textContent = "★";
+                star.onclick = async (e) => {
+                    e.stopPropagation();
+                    myShelf = myShelf.filter(b => b.title !== book.title);
+                    await fetch(`/remove_from_my_shelf`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ title: book.title })
+                    });
+                    displayMyShelf();
+                    displaySearchResults();
+                };
+        
+                bookDiv.innerHTML = `
+                    <div class="book-image-wrapper">
+                        <img src="${book.image}" alt="${book.title}">
+                    </div>
+                    <h3>${book.title}</h3>
+                    <p>著者: ${book.author}</p>
+                    <p>価格: ¥${book.price}</p>
+                `;
+                bookDiv.querySelector(".book-image-wrapper").appendChild(star);
+                myShelfDiv.appendChild(bookDiv);
+            });
+        }
+        
+        // -----------------------------
+        // 検索履歴管理
+        // -----------------------------
+        function getHistory() {
+            return JSON.parse(localStorage.getItem("searchHistory") || "[]");
+        }
+        
+        function saveHistory(history) {
+            localStorage.setItem("searchHistory", JSON.stringify(history));
+        }
+        
+        function addHistory(title) {
+            let history = getHistory();
+            history = history.filter(item => item !== title);
+            history.unshift(title);
+            if (history.length > 20) history = history.slice(0, 20);
+            saveHistory(history);
+            displayHistory();
+        }
+        
+        function deleteHistory(title) {
+            let history = getHistory().filter(item => item !== title);
+            saveHistory(history);
+            displayHistory();
+        }
+        
+        function displayHistory() {
+            const box = document.getElementById("search-history-box");
+            const input = document.getElementById("title");
+            const history = getHistory();
+        
+            if (history.length === 0) {
+                box.style.display = "none";
+                return;
+            }
+        
+            box.style.display = "block"; // 常に入力可能なら表示
+        
+            box.innerHTML = "";
+            history.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "history-item";
+        
+                const span = document.createElement("span");
+                span.className = "history-title";
+                span.textContent = item;
+                span.onclick = () => {
+                    input.value = item;
+                    searchBook();
+                };
+        
+                const btn = document.createElement("button");
+                btn.className = "delete-btn";
+                btn.textContent = "×";
+                btn.style.padding = "10px";       // タップしやすいサイズ
+                btn.style.fontSize = "16px";      
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteHistory(item);
+                };
+        
+                div.appendChild(span);
+                div.appendChild(btn);
+                box.appendChild(div);
+            });
+        }
+        
+        // -----------------------------
+        // 初期ロード & イベント
+        // -----------------------------
+        async function loadMyShelf() {
+            const res = await fetch(`/get_my_shelf`);
+            const data = await res.json();
+            myShelf = data.my_shelf || [];
+            displayMyShelf();
+        }
+        
+        window.onload = () => {
+            loadMyShelf();
+        
+            const input = document.getElementById("title");
+            const historyBox = document.getElementById("search-history-box");
+        
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    searchBook();
+                    historyBox.style.display = "none";
+                }
+            });
+        
+            input.addEventListener("focus", () => displayHistory());
+            input.addEventListener("input", () => displayHistory());
+        
+            // 履歴ボックス内クリック時も消えない
+            historyBox.addEventListener("mousedown", (e) => e.preventDefault());
+        
+            input.addEventListener("blur", () => {
+                setTimeout(() => { historyBox.style.display = "none"; }, 200);
+            });
+        };
+        </script>
+        
 </body>
 </html>

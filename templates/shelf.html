@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ shelf_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>{{ shelf_name }}</h1>
+
+    <div class="books-container" id="books-container">
+        {% for book in books %}
+        <div class="book">
+            <a href="{{ book.itemUrl }}" target="_blank">
+                <img src="{{ book.image }}" alt="{{ book.title }}">
+            </a>
+            <h3>{{ book.title }}</h3>
+            <p>著者: {{ book.author }}</p>
+            <p>価格: ¥{{ book.price }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
+
+    <!-- ★判定用スクリプト -->
+    <script>
+    let myShelf = [];
+
+    async function loadMyShelf() {
+        // 現在のユーザーの「私の本棚」を取得
+        const res = await fetch('/get_my_shelf');
+        const data = await res.json();
+        myShelf = data.my_shelf || [];
+        displayStars();
+    }
+
+    function displayStars() {
+        // 各本に★/☆を追加
+        document.querySelectorAll('#books-container .book').forEach(bookDiv => {
+            const title = bookDiv.querySelector('h3').textContent;
+
+            // 既に星があれば削除
+            const existingStar = bookDiv.querySelector('.star');
+            if (existingStar) existingStar.remove();
+
+            const star = document.createElement('span');
+            star.className = 'star';
+            star.textContent = myShelf.find(b => b.title === title) ? '★' : '☆';
+            star.style.cursor = 'pointer';
+
+            // クリックで追加/削除できる
+            star.onclick = async (e) => {
+                e.stopPropagation();
+                const book = {
+                    title: title,
+                    author: bookDiv.querySelector('p').textContent.replace('著者: ', ''),
+                    price: parseInt(bookDiv.querySelectorAll('p')[1].textContent.replace('価格: ¥', '')),
+                    image: bookDiv.querySelector('img').src,
+                    itemUrl: bookDiv.querySelector('a').href
+                };
+
+                if (star.textContent === '☆') {
+                    const res = await fetch('/add_to_my_shelf', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ book })
+                    });
+                    const data = await res.json();
+                    myShelf = data.my_shelf;
+                    star.textContent = '★';
+                } else {
+                    await fetch('/remove_from_my_shelf', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title })
+                    });
+                    myShelf = myShelf.filter(b => b.title !== title);
+                    star.textContent = '☆';
+                }
+            };
+
+            // 本の最初に追加
+            bookDiv.insertBefore(star, bookDiv.firstChild);
+        });
+    }
+
+    window.onload = () => {
+        loadMyShelf();
+    };
+    </script>
+</body>
+</html>
