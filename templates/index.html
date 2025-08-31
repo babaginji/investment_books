@@ -65,6 +65,12 @@
             const books = await res.json();
             searchResults = books;
         
+            // 検索結果を localStorage に保存
+            localStorage.setItem('lastSearch', JSON.stringify({
+                title: title,
+                books: books
+            }));
+        
             addHistory(title);
             displaySearchResults();
         }
@@ -110,7 +116,7 @@
         
                 // 画像を楽天ブックスリンクで囲む
                 const imgLink = document.createElement("a");
-                imgLink.href = book.itemUrl;  // 楽天ブックスURL
+                imgLink.href = book.itemUrl; 
                 imgLink.target = "_blank";
         
                 const img = document.createElement("img");
@@ -124,7 +130,6 @@
                 imgWrapper.appendChild(imgLink);
                 imgWrapper.appendChild(star);
         
-                // 本カードに画像ラッパーを追加
                 bookDiv.appendChild(imgWrapper);
         
                 // 詳細情報
@@ -169,7 +174,6 @@
                 const bookDiv = document.createElement("div");
                 bookDiv.className = "book";
         
-                // 星★
                 const star = document.createElement("span");
                 star.className = "star";
                 star.textContent = "★";
@@ -185,7 +189,6 @@
                     displaySearchResults();
                 };
         
-                // 画像リンク
                 const imgLink = document.createElement("a");
                 imgLink.href = book.itemUrl;
                 imgLink.target = "_blank";
@@ -315,6 +318,15 @@
         
             const input = document.getElementById("title");
             const historyBox = document.getElementById("search-history-box");
+        
+            // ページロード時に検索結果を復元
+            const lastSearch = localStorage.getItem('lastSearch');
+            if (lastSearch) {
+                const data = JSON.parse(lastSearch);
+                input.value = data.title;
+                searchResults = data.books;
+                displaySearchResults();
+            }
         
             input.addEventListener("keydown", (e) => {
                 if (e.key === "Enter") {
