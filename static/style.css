@@ -5,6 +5,7 @@ body {
     font-family: sans-serif;  
     padding: 20px;             
     margin: 0;
+    overflow-x: hidden; /* 横スクロール禁止 */
 }
 
 h1 { 
@@ -135,14 +136,32 @@ h1 {
     padding: 8px;
     margin: 0;
 }
+
 /* スマホは必ず3列 */
 @media (max-width: 600px) {
     .books-container {
-        grid-template-columns: repeat(3, 1fr); /* ← ここで固定 */
+        grid-template-columns: repeat(3, 1fr);
         gap: 6px;
     }
 }
-/* 本カード */
+
+/* タブレット */
+@media (min-width: 601px) and (max-width: 1024px) {
+    .books-container {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+    }
+}
+
+/* PC */
+@media (min-width: 1025px) {
+    .books-container {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+    }
+}
+
+/* 本カード（本棚用） */
 .books-container .book {
     background: #f9f9f9;
     padding: 6px;
@@ -176,47 +195,13 @@ h1 {
 }
 
 /* -----------------------------
-   レスポンシブ調整
------------------------------ */
-
-/* スマホは必ず3列 */
-@media (max-width: 600px) {
-    .books-container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-    }
-}
-
-/* タブレット */
-@media (min-width: 601px) and (max-width: 1024px) {
-    .books-container {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 10px;
-    }
-}
-
-/* PC */
-@media (min-width: 1025px) {
-    .books-container {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 12px;
-    }
-}
-
-
-/* 横スクロール禁止 */
-body {
-    overflow-x: hidden;
-}
-
-/* -----------------------------
-   検索結果（端いっぱい）
+   検索結果（横スクロール、端いっぱい）
 ----------------------------- */
 #search-results-wrapper {
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;  /* 全体横スクロール防止 */
+    overflow-x: hidden;
 }
 
 #search-results {
@@ -236,10 +221,8 @@ body {
     margin-right: 0;
 }
 
-/* -----------------------------
-   本カード1冊
------------------------------ */
-.book {
+/* 検索結果のカード */
+#search-results .book {
     flex: 0 0 auto;
     width: 150px;
     text-align: center;
@@ -251,21 +234,21 @@ body {
     transition: transform 0.2s;
 }
 
-.book:hover {
+#search-results .book:hover {
     transform: translateY(-5px);
 }
 
-.book img { 
+#search-results .book img { 
     width: 100%; 
     border-radius: 5px; 
 }
 
-.book h3 { 
+#search-results .book h3 { 
     font-size: 16px; 
     margin: 5px 0; 
 }
 
-.book p { 
+#search-results .book p { 
     font-size: 14px; 
     margin: 3px 0; 
 }
@@ -300,10 +283,14 @@ body {
 }
 
 /* -----------------------------
-   レスポンシブ対応
+   レスポンシブ（検索結果）
 ----------------------------- */
 /* スマホ */
 @media (max-width: 600px) {
+    #search-results .book {
+        width: calc(100% / 2.5 - 10px); 
+    }
+
     #search-panel {
         flex-direction: row;
         width: 100%;
@@ -322,10 +309,6 @@ body {
     .shelf-links {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-    }
-
-    #search-results .book {
-        width: calc(100% / 2.5 - 10px); 
     }
 
     #search-history-box {
