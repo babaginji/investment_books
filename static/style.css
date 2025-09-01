@@ -318,10 +318,6 @@ body {
         gap: 10px;
     }
 
-    .books-container .book {
-        width: calc(50% - 10px); 
-    }
-
     #search-results .book {
         width: calc(100% / 2.5 - 10px); 
     }
