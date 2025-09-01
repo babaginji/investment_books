@@ -135,7 +135,13 @@ h1 {
     padding: 8px;
     margin: 0;
 }
-
+/* スマホは必ず3列 */
+@media (max-width: 600px) {
+    .books-container {
+        grid-template-columns: repeat(3, 1fr); /* ← ここで固定 */
+        gap: 6px;
+    }
+}
 /* 本カード */
 .books-container .book {
     background: #f9f9f9;
