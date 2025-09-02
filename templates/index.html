@@ -80,60 +80,7 @@
             resultsDiv.innerHTML = "";
         
             searchResults.forEach(book => {
-                const bookDiv = document.createElement("div");
-                bookDiv.className = "book";
-        
-                // 星マーク
-                const star = document.createElement("span");
-                star.className = "star";
-                star.dataset.title = book.title;
-                star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
-                star.onclick = () => toggleStar(book);
-        
-                // 画像リンク
-                const imgLink = document.createElement("a");
-                imgLink.href = book.itemUrl;
-                imgLink.target = "_blank";
-        
-                const img = document.createElement("img");
-                img.src = book.image;
-                img.alt = book.title;
-                imgLink.appendChild(img);
-        
-                const imgWrapper = document.createElement("div");
-                imgWrapper.className = "book-image-wrapper";
-                imgWrapper.appendChild(imgLink);
-                imgWrapper.appendChild(star);
-        
-                bookDiv.appendChild(imgWrapper);
-        
-                // 詳細情報
-                const detailsDiv = document.createElement("div");
-                detailsDiv.className = "book-details";
-                detailsDiv.style.display = "none";
-                detailsDiv.innerHTML = `
-                    <p>価格: ¥${book.price}</p>
-                    <p>図書館API: 仮情報</p>
-                    <p>アマゾン関連情報: 仮情報</p>
-                    <p>内容紹介: 仮情報</p>
-                `;
-        
-                const toggleBtn = document.createElement("span");
-                toggleBtn.className = "toggle-btn";
-                toggleBtn.textContent = "詳細を見る";
-                toggleBtn.addEventListener("click", () => {
-                    if (detailsDiv.style.display === "none") {
-                        detailsDiv.style.display = "block";
-                        toggleBtn.textContent = "詳細を隠す";
-                    } else {
-                        detailsDiv.style.display = "none";
-                        toggleBtn.textContent = "詳細を見る";
-                    }
-                });
-        
-                bookDiv.appendChild(toggleBtn);
-                bookDiv.appendChild(detailsDiv);
-        
+                const bookDiv = createBookDiv(book);
                 resultsDiv.appendChild(bookDiv);
             });
         }
@@ -147,83 +94,79 @@
         
             myShelfDiv.innerHTML = "";
             myShelf.forEach(book => {
-                const bookDiv = document.createElement("div");
-                bookDiv.className = "book";
-        
-                const star = document.createElement("span");
-                star.className = "star";
-                star.dataset.title = book.title;
-                star.textContent = "★";
-                star.onclick = () => toggleStar(book);
-        
-                const imgLink = document.createElement("a");
-                imgLink.href = book.itemUrl;
-                imgLink.target = "_blank";
-        
-                const img = document.createElement("img");
-                img.src = book.image;
-                img.alt = book.title;
-                imgLink.appendChild(img);
-        
-                const imgWrapper = document.createElement("div");
-                imgWrapper.className = "book-image-wrapper";
-                imgWrapper.appendChild(imgLink);
-                imgWrapper.appendChild(star);
-        
-                bookDiv.appendChild(imgWrapper);
-        
-                const detailsDiv = document.createElement("div");
-                detailsDiv.className = "book-details";
-                detailsDiv.style.display = "none";
-                detailsDiv.innerHTML = `
-                    <p>価格: ¥${book.price}</p>
-                    <p>図書館API: 仮情報</p>
-                    <p>アマゾン関連情報: 仮情報</p>
-                    <p>内容紹介: 仮情報</p>
-                `;
-        
-                const toggleBtn = document.createElement("span");
-                toggleBtn.className = "toggle-btn";
-                toggleBtn.textContent = "詳細を見る";
-                toggleBtn.addEventListener("click", () => {
-                    if (detailsDiv.style.display === "none") {
-                        detailsDiv.style.display = "block";
-                        toggleBtn.textContent = "詳細を隠す";
-                    } else {
-                        detailsDiv.style.display = "none";
-                        toggleBtn.textContent = "詳細を見る";
-                    }
-                });
-        
-                bookDiv.appendChild(toggleBtn);
-                bookDiv.appendChild(detailsDiv);
-        
+                const bookDiv = createBookDiv(book);
                 myShelfDiv.appendChild(bookDiv);
             });
         }
         
         // -----------------------------
-        // 星の ON/OFF 共通処理
+        // 本カード作成（検索結果・私の本棚共通）
+        function createBookDiv(book) {
+            const bookDiv = document.createElement("div");
+            bookDiv.className = "book";
+        
+            // 星マーク
+            const star = document.createElement("span");
+            star.className = "star";
+            star.dataset.title = book.title;
+            star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
+            star.onclick = () => toggleStar(book);
+        
+            // 画像リンク
+            const imgLink = document.createElement("a");
+            imgLink.href = book.itemUrl;
+            imgLink.target = "_blank";
+        
+            const img = document.createElement("img");
+            img.src = book.image;
+            img.alt = book.title;
+            imgLink.appendChild(img);
+        
+            const imgWrapper = document.createElement("div");
+            imgWrapper.className = "book-image-wrapper";
+            imgWrapper.appendChild(imgLink);
+            imgWrapper.appendChild(star);
+        
+            bookDiv.appendChild(imgWrapper);
+        
+            // 詳細情報
+            const detailsDiv = document.createElement("div");
+            detailsDiv.className = "book-details";
+            detailsDiv.style.display = "none";
+            detailsDiv.innerHTML = `
+                <p>価格: ¥${book.price}</p>
+                <p>図書館API: 仮情報</p>
+                <p>アマゾン関連情報: 仮情報</p>
+                <p>内容紹介: 仮情報</p>
+            `;
+        
+            const toggleBtn = document.createElement("span");
+            toggleBtn.className = "toggle-btn";
+            toggleBtn.textContent = "詳細を見る";
+            toggleBtn.addEventListener("click", () => {
+                if (detailsDiv.style.display === "none") {
+                    detailsDiv.style.display = "block";
+                    toggleBtn.textContent = "詳細を隠す";
+                } else {
+                    detailsDiv.style.display = "none";
+                    toggleBtn.textContent = "詳細を見る";
+                }
+            });
+        
+            bookDiv.appendChild(toggleBtn);
+            bookDiv.appendChild(detailsDiv);
+        
+            return bookDiv;
+        }
+        
         // -----------------------------
-        async function toggleStar(book) {
-            const exists = myShelf.find(b => b.title === book.title);
-            if (!exists) {
-                // 追加
-                const res = await fetch(`/add_to_my_shelf`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ book })
-                });
-                const data = await res.json();
-                myShelf = data.my_shelf;
+        // 星の ON/OFF
+        function toggleStar(book) {
+            const index = myShelf.findIndex(b => b.title === book.title);
+            if (index === -1) {
+                myShelf.push(book);
             } else {
-                // 削除
-                await fetch(`/remove_from_my_shelf`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ title: book.title })
-                });
-                myShelf = myShelf.filter(b => b.title !== book.title);
+                myShelf.splice(index, 1);
             }
             saveShelfLocal();
             displayMyShelf();
@@ -232,7 +175,6 @@
         
         // -----------------------------
         // 検索履歴管理
-        // -----------------------------
         function getHistory() {
             return JSON.parse(localStorage.getItem("searchHistory") || "[]");
         }
@@ -299,26 +241,15 @@
         }
         
         // -----------------------------
-        // 初期ロード & イベント
+        // ページロード時に localStorage から復元
         // -----------------------------
-        async function loadMyShelf() {
-            try {
-                const res = await fetch(`/get_my_shelf`);
-                const data = await res.json();
-                myShelf = data.my_shelf || [];
-            } catch {
-                myShelf = loadShelfLocal();
-            }
-            displayMyShelf();
-        }
-        
         window.onload = () => {
-            loadMyShelf();
+            myShelf = loadShelfLocal();
+            displayMyShelf();
         
             const input = document.getElementById("title");
             const historyBox = document.getElementById("search-history-box");
         
-            // ページロード時に検索結果を復元
             const lastSearch = localStorage.getItem("lastSearch");
             if (lastSearch) {
                 const data = JSON.parse(lastSearch);
@@ -336,14 +267,13 @@
         
             input.addEventListener("focus", () => displayHistory());
             input.addEventListener("input", () => displayHistory());
-        
             historyBox.addEventListener("mousedown", (e) => e.preventDefault());
-        
             input.addEventListener("blur", () => {
                 setTimeout(() => { historyBox.style.display = "none"; }, 200);
             });
         };
         </script>
+        
         
 </body>
 </html>
