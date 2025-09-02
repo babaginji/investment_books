@@ -43,7 +43,7 @@ h1 {
     font-size: 14px;
     cursor: pointer;
     border: 1px solid #ccc;
-    background-color: #f2f2f2;
+    background-color: #fff;
     border-radius: 4px;
     transition: background-color 0.2s;
 }
@@ -148,11 +148,11 @@ h1 {
 }
 .shelf-link a {
     display: inline-block;
-    padding: 6px 12px;
-    font-size: 0.95em;
+    padding: 3px 6px;
+    font-size: 0.7em;
     color: #0077cc;
     border: 1px solid #0077cc;
-    border-radius: 6px;
+    border-radius: 12px;
     background: #f9f9f9;
     text-decoration: none;
     white-space: nowrap;
