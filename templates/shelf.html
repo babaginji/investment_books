@@ -15,93 +15,93 @@
     <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
 
     <script>
-    const shelfName = "{{ shelf_name }}"; // Jinja2 で棚名を取得
-
-    // -----------------------------
-    // localStorage から指定棚をロード
-    // -----------------------------
-    function loadShelfLocal(name) {
-        return JSON.parse(localStorage.getItem(name) || "[]");
-    }
-
-    function saveShelfLocal(name, books) {
-        localStorage.setItem(name, JSON.stringify(books));
-    }
-
-    // -----------------------------
-    // 本棚を描画
-    // -----------------------------
-    function displayShelf(books) {
-        const container = document.getElementById('books-container');
-        container.innerHTML = '';
-
-        books.forEach(book => {
-            const bookDiv = document.createElement('div');
-            bookDiv.className = 'book';
-
-            const star = document.createElement('span');
-            star.className = 'star';
-            star.textContent = '★';
-            star.style.cursor = 'pointer';
-
-            // ★が塗られているかチェック
-            const shelfBooks = loadShelfLocal("私の本棚");
-            if (shelfBooks.some(b => b.title === book.title)) {
-                star.style.color = 'gold';
-            } else {
-                star.style.color = 'gray';
-            }
-
-            star.onclick = () => {
-                let myShelf = loadShelfLocal("私の本棚");
-                const index = myShelf.findIndex(b => b.title === book.title);
-                if (index === -1) {
-                    // 追加
-                    myShelf.push(book);
-                    star.style.color = 'gold';
-                } else {
-                    // 削除
-                    myShelf.splice(index, 1);
-                    star.style.color = 'gray';
-                }
-                saveShelfLocal("私の本棚", myShelf);
-            };
-
-            const imgLink = document.createElement('a');
-            imgLink.href = book.itemUrl;
-            imgLink.target = '_blank';
-
-            const img = document.createElement('img');
-            img.src = book.image;
-            img.alt = book.title;
-            imgLink.appendChild(img);
-
-            const titleH3 = document.createElement('h3');
-            titleH3.textContent = book.title;
-
-            const authorP = document.createElement('p');
-            authorP.textContent = '著者: ' + book.author;
-
-            const priceP = document.createElement('p');
-            priceP.textContent = '価格: ¥' + book.price;
-
-            bookDiv.appendChild(star);
-            bookDiv.appendChild(imgLink);
-            bookDiv.appendChild(titleH3);
-            bookDiv.appendChild(authorP);
-            bookDiv.appendChild(priceP);
-
-            container.appendChild(bookDiv);
-        });
-    }
-
-    // -----------------------------
-    // 初期ロード
-    // -----------------------------
-    window.onload = () => {
-        const books = loadShelfLocal(shelfName);
-        displayShelf(books);
-    };
-    </script>
+        const shelfName = "{{ shelf_name }}"; // Jinja2 で棚名を取得
+        
+        // -----------------------------
+        // localStorage から「私の本棚」をロード
+        // -----------------------------
+        function loadMyShelf() {
+            return JSON.parse(localStorage.getItem("myShelf") || "[]");
+        }
+        
+        function saveMyShelf(books) {
+            localStorage.setItem("myShelf", JSON.stringify(books));
+        }
+        
+        // -----------------------------
+        // この棚の本はサーバーから渡された books を使用
+        // -----------------------------
+        const shelfBooks = {{ books|tojson }};
+        
+        // -----------------------------
+        // 本棚を描画
+        // -----------------------------
+        function displayShelf() {
+            const container = document.getElementById('books-container');
+            container.innerHTML = '';
+        
+            const myShelf = loadMyShelf();
+        
+            shelfBooks.forEach(book => {
+                const bookDiv = document.createElement('div');
+                bookDiv.className = 'book';
+        
+                const star = document.createElement('span');
+                star.className = 'star';
+                star.textContent = '★';
+                star.style.cursor = 'pointer';
+        
+                // ★の色をセット
+                star.style.color = myShelf.some(b => b.title === book.title) ? 'gold' : 'gray';
+        
+                star.onclick = () => {
+                    let updatedShelf = loadMyShelf();
+                    const index = updatedShelf.findIndex(b => b.title === book.title);
+                    if (index === -1) {
+                        updatedShelf.push(book);
+                        star.style.color = 'gold';
+                    } else {
+                        updatedShelf.splice(index, 1);
+                        star.style.color = 'gray';
+                    }
+                    saveMyShelf(updatedShelf);
+                };
+        
+                const imgLink = document.createElement('a');
+                imgLink.href = book.itemUrl;
+                imgLink.target = '_blank';
+        
+                const img = document.createElement('img');
+                img.src = book.image;
+                img.alt = book.title;
+                imgLink.appendChild(img);
+        
+                const titleH3 = document.createElement('h3');
+                titleH3.textContent = book.title;
+        
+                const authorP = document.createElement('p');
+                authorP.textContent = '著者: ' + book.author;
+        
+                const priceP = document.createElement('p');
+                priceP.textContent = '価格: ¥' + book.price;
+        
+                bookDiv.appendChild(star);
+                bookDiv.appendChild(imgLink);
+                bookDiv.appendChild(titleH3);
+                bookDiv.appendChild(authorP);
+                bookDiv.appendChild(priceP);
+        
+                container.appendChild(bookDiv);
+            });
+        }
+        
+        // -----------------------------
+        // 初期ロード
+        // -----------------------------
+        window.onload = () => {
+            displayShelf();
+        };
+        </script>
+        
 </body>
 </html>
