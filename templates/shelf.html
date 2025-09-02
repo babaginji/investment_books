@@ -4,20 +4,29 @@
     <meta charset="UTF-8">
     <title>{{ shelf_name }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* タブ用簡易スタイル */
+        .tabs { display: flex; gap: 10px; margin-bottom: 10px; }
+        .tab { padding: 6px 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; background: #f9f9f9; }
+        .tab.active { background: #0077cc; color: #fff; }
+    </style>
 </head>
 <body>
     <h1>{{ shelf_name }}</h1>
 
-    <h2>未読</h2>
-    <div id="unread-container" class="books-container"></div>
+    <!-- タブ切替 -->
+    <div class="tabs">
+        <div class="tab active" id="tab-all">すべて</div>
+        <div class="tab" id="tab-read">既読</div>
+    </div>
 
-    <h2>既読</h2>
-    <div id="read-container" class="books-container"></div>
+    <!-- 本棚表示領域 -->
+    <div id="books-container" class="books-container"></div>
 
     <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
 
     <script>
-        const shelfName = "{{ shelf_name }}"; 
+        const shelfName = "{{ shelf_name }}";
         const shelfBooksFromServer = {{ books|tojson }};
         let myShelf = [];
 
@@ -26,13 +35,11 @@
         // -----------------------------
         function loadMyShelf() {
             const data = JSON.parse(localStorage.getItem("myShelf") || "[]");
-            // read フラグが無い本には false を付与
             return data.map(book => {
                 if (typeof book.read === 'undefined') book.read = false;
                 return book;
             });
         }
-
         function saveMyShelf() {
             localStorage.setItem("myShelf", JSON.stringify(myShelf));
         }
@@ -44,7 +51,6 @@
             const bookDiv = document.createElement('div');
             bookDiv.className = 'book';
 
-            // 星マーク（削除用）
             const star = document.createElement('span');
             star.className = 'star';
             star.textContent = '★';
@@ -56,7 +62,6 @@
             };
             bookDiv.appendChild(star);
 
-            // 画像
             const imgLink = document.createElement('a');
             imgLink.href = book.itemUrl;
             imgLink.target = '_blank';
@@ -66,7 +71,6 @@
             imgLink.appendChild(img);
             bookDiv.appendChild(imgLink);
 
-            // タイトル・著者・価格
             const titleH3 = document.createElement('h3');
             titleH3.textContent = book.title;
             bookDiv.appendChild(titleH3);
@@ -79,7 +83,6 @@
             priceP.textContent = '価格: ¥' + book.price;
             bookDiv.appendChild(priceP);
 
-            // 既読ボタン（absolute ではなく普通に配置）
             const readBtn = document.createElement('button');
             readBtn.textContent = book.read ? '未読に戻す' : '既読にする';
             readBtn.style.fontSize = '12px';
@@ -96,24 +99,35 @@
         }
 
         // -----------------------------
-        // 本棚描画
+        // 本棚描画（表示モード: "all" or "read"）
         // -----------------------------
+        let currentTab = "all";
         function displayShelf() {
-            const unreadContainer = document.getElementById('unread-container');
-            const readContainer = document.getElementById('read-container');
-
-            unreadContainer.innerHTML = '';
-            readContainer.innerHTML = '';
+            const container = document.getElementById('books-container');
+            container.innerHTML = '';
 
             myShelf.forEach(book => {
-                const bookDiv = createBookDiv(book);
-                if (book.read) {
-                    readContainer.appendChild(bookDiv);
-                } else {
-                    unreadContainer.appendChild(bookDiv);
+                if (currentTab === "all" || (currentTab === "read" && book.read)) {
+                    container.appendChild(createBookDiv(book));
                 }
             });
         }
+
+        // -----------------------------
+        // タブ切替処理
+        // -----------------------------
+        document.getElementById('tab-all').onclick = () => {
+            currentTab = "all";
+            document.getElementById('tab-all').classList.add('active');
+            document.getElementById('tab-read').classList.remove('active');
+            displayShelf();
+        };
+        document.getElementById('tab-read').onclick = () => {
+            currentTab = "read";
+            document.getElementById('tab-read').classList.add('active');
+            document.getElementById('tab-all').classList.remove('active');
+            displayShelf();
+        };
 
         // -----------------------------
         // 初期ロード
