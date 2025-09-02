@@ -100,6 +100,89 @@
 
             return bookDiv;
         }
+        // 本カードに右下のメモアイコン追加
+        const memoBtn = document.createElement('span');
+        memoBtn.textContent = '✏';
+        memoBtn.style.position = 'absolute';
+        memoBtn.style.bottom = '5px';
+        memoBtn.style.right = '5px';
+        memoBtn.style.fontSize = '16px';
+        memoBtn.style.cursor = 'pointer';
+        bookDiv.appendChild(memoBtn);
+
+        // メモモーダル作成
+        const memoModal = document.createElement('div');
+        memoModal.style.position = 'fixed';
+        memoModal.style.top = '50%';
+        memoModal.style.left = '50%';
+        memoModal.style.transform = 'translate(-50%, -50%)';
+        memoModal.style.background = '#fff';
+        memoModal.style.border = '1px solid #ccc';
+        memoModal.style.padding = '15px';
+        memoModal.style.zIndex = 10000;
+        memoModal.style.display = 'none';
+        memoModal.style.width = '80%';
+        memoModal.style.maxWidth = '400px';
+        memoModal.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+        memoModal.style.borderRadius = '8px';
+
+        // ページ入力
+        const pageInput = document.createElement('input');
+        pageInput.type = 'text';
+        pageInput.placeholder = 'ページ数';
+        pageInput.style.width = '100%';
+        pageInput.style.marginBottom = '10px';
+        memoModal.appendChild(pageInput);
+
+        // メモ本文
+        const memoTextarea = document.createElement('textarea');
+        memoTextarea.placeholder = 'メモを書く';
+        memoTextarea.style.width = '100%';
+        memoTextarea.style.height = '100px';
+        memoModal.appendChild(memoTextarea);
+
+        // 保存ボタン
+        const saveMemoBtn = document.createElement('button');
+        saveMemoBtn.textContent = '保存';
+        saveMemoBtn.style.marginTop = '10px';
+        saveMemoBtn.onclick = () => {
+            book.page = pageInput.value;    // ページ数を本データに保存
+            book.memo = memoTextarea.value; // メモ本文を保存
+            updatePageBadge(bookDiv, book.page);
+            memoModal.style.display = 'none';
+            saveShelfLocal();
+        };
+        memoModal.appendChild(saveMemoBtn);
+
+        // キャンセルボタン
+        const cancelMemoBtn = document.createElement('button');
+        cancelMemoBtn.textContent = 'キャンセル';
+        cancelMemoBtn.style.marginLeft = '10px';
+        cancelMemoBtn.onclick = () => {
+            memoModal.style.display = 'none';
+        };
+        memoModal.appendChild(cancelMemoBtn);
+
+        document.body.appendChild(memoModal);
+
+        // メモボタン押したらモーダル表示
+        memoBtn.onclick = () => {
+            pageInput.value = book.page || '';
+            memoTextarea.value = book.      memo || '';
+            memoModal.style.display = 'block';
+        };
+
+        // 本カード右上のページ帯表示関数
+        function updatePageBadge(bookDiv, page) {
+            let badge = bookDiv.querySelector('.page-badge');
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.className = 'page-badge';
+                bookDiv.appendChild(badge);
+            }
+            badge.textContent = page || '';
+        }
+        updatePageBadge(bookDiv, book.page);
 
         // -----------------------------
         // 本棚描画（表示モード: "all" or "read"）
