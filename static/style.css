@@ -23,7 +23,7 @@ h1 {
 #search-panel {
     display: flex;
     gap: 5px;
-    margin: 5px 0 10px 8px;  
+    margin: 5px 0 0 8px;  
     width: 70%; /* 横幅70％ */
 }
 #search-panel input {

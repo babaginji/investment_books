@@ -9,6 +9,9 @@ app = Flask(__name__)
 RAKUTEN_APP_ID = "1077795699367532233"
 DATA_FILE = "data/shelves.json"
 
+# -----------------------------
+# 棚の種類
+# -----------------------------
 SHELVES = [
     "貯蓄優先型",
     "積立安定型",
@@ -22,10 +25,11 @@ SHELVES = [
 ]
 
 # -----------------------------
-# JSON読み書き
+# JSON読み書き関数
 # -----------------------------
 def load_shelves():
     if not os.path.exists(DATA_FILE):
+        # 初回作成: 空のリストで初期化
         data = {shelf: [] for shelf in SHELVES}
         with open(DATA_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
@@ -47,7 +51,7 @@ def index():
 
 
 # -----------------------------
-# 検索API（楽天）
+# 楽天書籍検索API
 # -----------------------------
 @app.route("/search")
 def search_books():
@@ -102,7 +106,7 @@ def add_to_my_shelf():
 
 
 # -----------------------------
-# 「私の本棚」削除
+# 「私の本棚」から削除
 # -----------------------------
 @app.route("/remove_from_my_shelf", methods=["POST"])
 def remove_from_my_shelf():
@@ -133,8 +137,6 @@ def shelf_page(shelf_name):
     shelf_name = unquote(shelf_name)
     shelves = load_shelves()
     books = shelves.get(shelf_name, [])
-
-    # 追加: 現在ユーザーの「私の本棚」情報も渡す
     my_shelf_books = shelves.get("私の本棚", [])
 
     return render_template(
@@ -142,5 +144,8 @@ def shelf_page(shelf_name):
     )
 
 
+# -----------------------------
+# 実行
+# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)
