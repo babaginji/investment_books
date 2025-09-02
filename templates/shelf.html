@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>{{ shelf_name }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- スマホでのズーム防止 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         /* タブ用簡易スタイル */
         .tabs { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -21,7 +23,6 @@
             <div class="tab" id="tab-read">既読</div>
         </div>
     </div>
-    
 
     <!-- 本棚表示領域 -->
     <div id="books-container" class="books-container"></div>
@@ -32,7 +33,7 @@
         const shelfName = "{{ shelf_name }}";
         const shelfBooksFromServer = {{ books|tojson }};
         let myShelf = [];
-        
+
         // -----------------------------
         // localStorage から「私の本棚」を取得
         // -----------------------------
@@ -46,7 +47,7 @@
         function saveMyShelf() {
             localStorage.setItem("myShelf", JSON.stringify(myShelf));
         }
-        
+
         // -----------------------------
         // 本ボックス作成
         // -----------------------------
@@ -54,7 +55,7 @@
             const bookDiv = document.createElement('div');
             bookDiv.className = 'book';
             bookDiv.style.position = 'relative';
-        
+
             // 星マーク（削除用）
             const star = document.createElement('span');
             star.className = 'star';
@@ -66,7 +67,7 @@
                 displayShelf();
             };
             bookDiv.appendChild(star);
-        
+
             // 画像
             const imgLink = document.createElement('a');
             imgLink.href = book.itemUrl;
@@ -76,25 +77,25 @@
             img.alt = book.title;
             imgLink.appendChild(img);
             bookDiv.appendChild(imgLink);
-        
+
             // タイトル・著者・価格
             const titleH3 = document.createElement('h3');
             titleH3.textContent = book.title;
             bookDiv.appendChild(titleH3);
-        
+
             const authorP = document.createElement('p');
             authorP.textContent = '著者: ' + book.author;
             bookDiv.appendChild(authorP);
-        
+
             const priceP = document.createElement('p');
             priceP.textContent = '価格: ¥' + book.price;
             bookDiv.appendChild(priceP);
-        
+
             // 既読ボタン
             const readBtn = document.createElement('button');
             readBtn.textContent = book.read ? '未読に戻す' : '既読にする';
-            readBtn.style.fontSize = '30px';
-            readBtn.style.padding = '2px 4px';
+            readBtn.style.fontSize = '18px';
+            readBtn.style.padding = '4px 8px';
             readBtn.style.marginTop = '4px';
             readBtn.onclick = () => {
                 book.read = !book.read;
@@ -102,7 +103,7 @@
                 displayShelf();
             };
             bookDiv.appendChild(readBtn);
-        
+
             // ページ帯（右上）
             const badge = document.createElement('div');
             badge.className = 'page-badge';
@@ -111,22 +112,22 @@
             badge.style.right = '5px';
             badge.style.backgroundColor = 'white';
             badge.style.padding = '2px 6px';
-            badge.style.fontSize = '30px';
+            badge.style.fontSize = '18px';
             badge.style.transform = 'rotate(-15deg)';
             badge.style.transformOrigin = 'top right';
             badge.textContent = book.page || '';
             bookDiv.appendChild(badge);
-        
+
             // メモボタン（右下）
             const memoBtn = document.createElement('span');
             memoBtn.textContent = '✏';
             memoBtn.style.position = 'absolute';
             memoBtn.style.bottom = '5px';
             memoBtn.style.right = '5px';
-            memoBtn.style.fontSize = '30px';
+            memoBtn.style.fontSize = '24px';
             memoBtn.style.cursor = 'pointer';
             bookDiv.appendChild(memoBtn);
-        
+
             // -----------------------------
             // メモモーダル
             // -----------------------------
@@ -140,24 +141,33 @@
             memoModal.style.padding = '15px';
             memoModal.style.zIndex = 10000;
             memoModal.style.display = 'none';
-            memoModal.style.width = '80%';
+            memoModal.style.width = '90%';
             memoModal.style.maxWidth = '400px';
             memoModal.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
             memoModal.style.borderRadius = '8px';
-        
+
+            // ページ入力
             const pageInput = document.createElement('input');
             pageInput.type = 'text';
             pageInput.placeholder = 'ページ数';
             pageInput.style.width = '100%';
             pageInput.style.marginBottom = '10px';
+            pageInput.style.fontSize = '18px';
+            pageInput.style.padding = '8px';
+            pageInput.style.boxSizing = 'border-box';
             memoModal.appendChild(pageInput);
-        
+
+            // メモ本文
             const memoTextarea = document.createElement('textarea');
             memoTextarea.placeholder = 'メモを書く';
-            memoTextarea.style.width = '200%';
-            memoTextarea.style.height = '300px';
+            memoTextarea.style.width = '100%';
+            memoTextarea.style.height = '250px';
+            memoTextarea.style.fontSize = '16px';
+            memoTextarea.style.padding = '8px';
+            memoTextarea.style.boxSizing = 'border-box';
             memoModal.appendChild(memoTextarea);
-        
+
+            // 保存ボタン
             const saveMemoBtn = document.createElement('button');
             saveMemoBtn.textContent = '保存';
             saveMemoBtn.style.marginTop = '10px';
@@ -170,7 +180,8 @@
                 displayShelf();
             };
             memoModal.appendChild(saveMemoBtn);
-        
+
+            // キャンセルボタン
             const cancelMemoBtn = document.createElement('button');
             cancelMemoBtn.textContent = 'キャンセル';
             cancelMemoBtn.style.marginLeft = '10px';
@@ -178,18 +189,18 @@
                 memoModal.style.display = 'none';
             };
             memoModal.appendChild(cancelMemoBtn);
-        
+
             document.body.appendChild(memoModal);
-        
+
             memoBtn.onclick = () => {
                 pageInput.value = book.page || '';
                 memoTextarea.value = book.memo || '';
                 memoModal.style.display = 'block';
             };
-        
+
             return bookDiv;
         }
-        
+
         // -----------------------------
         // 本棚描画（all / read）
         let currentTab = 'all';
@@ -202,7 +213,7 @@
                 }
             });
         }
-        
+
         // -----------------------------
         // タブ切替
         // -----------------------------
@@ -218,7 +229,7 @@
             document.getElementById('tab-all').classList.remove('active');
             displayShelf();
         };
-        
+
         // -----------------------------
         // 初期ロード
         // -----------------------------
@@ -226,7 +237,6 @@
             myShelf = loadMyShelf();
             displayShelf();
         };
-        </script>
-        
+    </script>
 </body>
 </html>
