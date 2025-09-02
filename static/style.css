@@ -237,7 +237,7 @@ h1 {
 
 #search-results .book {
     flex: 0 0 auto;
-    width: 150px;           /* 必要に応じて調整 */
+    width: 200px;           /* 必要に応じて調整 */
     text-align: center;
     border: 1px solid #fff; /* ボーダー白に */
     border-radius: 5px;
