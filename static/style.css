@@ -288,6 +288,45 @@ h1 {
     color: gold;
     cursor: pointer;
 }
+/* -----------------------------
+   閲覧履歴
+----------------------------- */
+/* 閲覧履歴の横スクロールエリア */
+#view-history {
+    display: flex;           /* 横並び */
+    overflow-x: auto;        /* 横スクロール */
+    padding: 8px 0;
+    gap: 8px;                /* 本同士の間隔 */
+}
+
+/* 閲覧履歴の本 */
+#view-history .book {
+    flex: 0 0 auto;          /* 横スクロール用に固定幅 */
+    width: 70%;              /* 検索結果の70% */
+    max-width: 120px;        /* 適宜調整 */
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 本の表紙画像 */
+#view-history .book img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+/* 本の詳細情報 */
+#view-history .book-details {
+    font-size: 0.7em;        /* 小さめ文字 */
+    text-align: center;
+    margin-top: 4px;
+}
 
 /* -----------------------------
    レスポンシブ（検索結果）
