@@ -171,10 +171,20 @@ h1 {
 ----------------------------- */
 .books-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 8px;
     padding: 8px;
     margin: 0;
+}
+
+/* -----------------------------
+   スマホ表示（最大幅600px）
+----------------------------- */
+@media (max-width: 600px) {
+    .books-container {
+        grid-template-columns: repeat(3, 1fr); /* 3列固定 */
+        gap: 8px;
+    }
 }
 
 /* 本カード */
@@ -196,11 +206,11 @@ h1 {
     border-radius: 4px;
 }
 .books-container .book h3 {
-    font-size: 13px;
+    font-size: 17px;
     margin: 4px 0 2px;
 }
 .books-container .book p {
-    font-size: 12px;
+    font-size: 17px;
     margin: 2px 0;
     color: #444;
 }
