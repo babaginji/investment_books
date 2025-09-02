@@ -31,15 +31,17 @@
             const container = document.getElementById('books-container');
             container.innerHTML = '';
         
-            const myShelf = loadMyShelf();
+            let booksToShow = [];
         
-            // サーバー本＋私の本棚にある本（重複なし）をマージ
-            const allBooksMap = {};
-            shelfBooksFromServer.forEach(b => allBooksMap[b.title] = b);
-            myShelf.forEach(b => allBooksMap[b.title] = b);
-            const allBooks = Object.values(allBooksMap);
+            if (shelfName === "私の本棚") {
+                // 「私の本棚」は localStorage の内容を表示
+                booksToShow = loadMyShelf();
+            } else {
+                // 他の棚はサーバー棚の本だけ表示
+                booksToShow = shelfBooksFromServer;
+            }
         
-            allBooks.forEach(book => {
+            booksToShow.forEach(book => {
                 const bookDiv = document.createElement('div');
                 bookDiv.className = 'book';
         
@@ -47,20 +49,23 @@
                 star.className = 'star';
                 star.textContent = '★';
                 star.style.cursor = 'pointer';
-                star.style.color = myShelf.some(b => b.title === book.title) ? 'gold' : 'gray';
-        
-                star.onclick = () => {
-                    let updatedShelf = loadMyShelf();
-                    const index = updatedShelf.findIndex(b => b.title === book.title);
-                    if (index === -1) {
-                        updatedShelf.push(book);
-                        star.style.color = 'gold';
-                    } else {
-                        updatedShelf.splice(index, 1);
-                        star.style.color = 'gray';
-                    }
-                    saveMyShelf(updatedShelf);
-                };
+                // 「私の本棚」だけ星を押せる
+                if (shelfName === "私の本棚") {
+                    star.style.color = 'gold';
+                    star.onclick = () => {
+                        let myShelf = loadMyShelf();
+                        const index = myShelf.findIndex(b => b.title === book.title);
+                        if (index === -1) {
+                            myShelf.push(book);
+                            star.style.color = 'gold';
+                        } else {
+                            myShelf.splice(index, 1);
+                            star.style.color = 'gray';
+                        }
+                        saveMyShelf(myShelf);
+                        displayShelf();
+                    };
+                }
         
                 const imgLink = document.createElement('a');
                 imgLink.href = book.itemUrl;
