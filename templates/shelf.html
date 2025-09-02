@@ -33,19 +33,24 @@
             displayStars();
         }
         
-        // 本の★を表示
+        // ★表示と同期
         function displayStars() {
             document.querySelectorAll('#books-container .book').forEach(bookDiv => {
                 const title = bookDiv.querySelector('h3').textContent;
         
-                const existingStar = bookDiv.querySelector('.star');
-                if (existingStar) existingStar.remove();
+                // 既存の★を削除
+                let star = bookDiv.querySelector('.star');
+                if (!star) {
+                    star = document.createElement('span');
+                    star.className = 'star';
+                    star.style.cursor = 'pointer';
+                    bookDiv.insertBefore(star, bookDiv.firstChild);
+                }
         
-                const star = document.createElement('span');
-                star.className = 'star';
+                // localStorage に応じて★/☆設定
                 star.textContent = myShelf.find(b => b.title === title) ? '★' : '☆';
-                star.style.cursor = 'pointer';
         
+                // クリックで追加/削除
                 star.onclick = () => {
                     const author = bookDiv.querySelector('p').textContent.replace('著者: ', '');
                     const price = parseInt(bookDiv.querySelectorAll('p')[1].textContent.replace('価格: ¥', ''));
@@ -54,24 +59,20 @@
         
                     const index = myShelf.findIndex(b => b.title === title);
                     if (index === -1) {
-                        // 追加
                         myShelf.push({ title, author, price, image, itemUrl });
                         star.textContent = '★';
                     } else {
-                        // 削除
                         myShelf.splice(index, 1);
                         star.textContent = '☆';
                     }
         
-                    // localStorage に保存
                     localStorage.setItem("myShelf", JSON.stringify(myShelf));
                 };
-        
-                bookDiv.insertBefore(star, bookDiv.firstChild);
             });
         }
         
-        window.onload = loadMyShelf;
+        // ページロードで localStorage から復元
+        window.addEventListener('DOMContentLoaded', loadMyShelf);
         </script>
         
 </body>
