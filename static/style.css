@@ -108,7 +108,7 @@ h1 {
    トップページ: 棚リンク一覧
 ----------------------------- */
 .my-shelf-link {
-    margin: 5px 0 5px 0; 
+    margin: 5px 0 0 8px; 
     text-align: center;
 }
 .my-shelf-link a {
