@@ -351,27 +351,31 @@ h2 {
 /* -----------------------------
    私の本棚内
 ----------------------------- */
-/* タブ用スタイル */
-.tabs {
-    display: flex;
-    justify-content: center;   /* 中央揃え */
-    gap: 30px;                 /* タブ間の距離 */
-    margin-bottom: 15px;
-}
-.tab {
-    padding: 15px 30px;        /* 大きめに */
-    cursor: pointer;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: #f9f9f9;
-    font-size: 25px;           /* フォント大きく */
-    font-weight: bold;
-    transition: background 0.2s, color 0.2s;
-}
-.tab.active {
-    background: #0077cc;
-    color: #fff;
-}
+    /* タブ用スタイル */
+    .tabs {
+        display: flex;
+        justify-content: center;   /* 中央揃え */
+        gap: 20px;                 /* タブ間の距離 */
+        margin-bottom: 15px;
+    }
+    .tab {
+        padding: 25px 40px;        
+        cursor: pointer;
+        border: 1px solid #0077cc; /* 枠も水色に */
+        border-radius: 20px;        /* 丸くする */
+        background: #f9f9f9;
+        font-size: 25px;           
+        font-weight: bold;
+        color: #0077cc;             /* 文字を水色 */
+        transition: background 0.2s, color 0.2s;
+        border-bottom: 10px solid #e0e0e0; /* 薄い灰色の線 */
+        padding-bottom: 0px;  /* 線と検索結果の間の余白 */
+        margin-bottom: 4px;  /* 線と閲覧履歴の間の余白 */
+    }
+    .tab.active {
+        background: #0077cc;       /* 選択中は水色背景 */
+        color: #fff;               /* 文字は白 */
+    }
 /* -----------------------------
    レスポンシブ（検索結果）
 ----------------------------- */
