@@ -93,7 +93,7 @@
             // 既読ボタン
             const readBtn = document.createElement('button');
             readBtn.textContent = book.read ? '未読に戻す' : '既読にする';
-            readBtn.style.fontSize = '12px';
+            readBtn.style.fontSize = '30px';
             readBtn.style.padding = '2px 4px';
             readBtn.style.marginTop = '4px';
             readBtn.onclick = () => {
@@ -111,7 +111,7 @@
             badge.style.right = '5px';
             badge.style.backgroundColor = 'white';
             badge.style.padding = '2px 6px';
-            badge.style.fontSize = '12px';
+            badge.style.fontSize = '30px';
             badge.style.transform = 'rotate(-15deg)';
             badge.style.transformOrigin = 'top right';
             badge.textContent = book.page || '';
@@ -123,7 +123,7 @@
             memoBtn.style.position = 'absolute';
             memoBtn.style.bottom = '5px';
             memoBtn.style.right = '5px';
-            memoBtn.style.fontSize = '16px';
+            memoBtn.style.fontSize = '30px';
             memoBtn.style.cursor = 'pointer';
             bookDiv.appendChild(memoBtn);
         
@@ -154,8 +154,8 @@
         
             const memoTextarea = document.createElement('textarea');
             memoTextarea.placeholder = 'メモを書く';
-            memoTextarea.style.width = '100%';
-            memoTextarea.style.height = '100px';
+            memoTextarea.style.width = '200%';
+            memoTextarea.style.height = '300px';
             memoModal.appendChild(memoTextarea);
         
             const saveMemoBtn = document.createElement('button');
