@@ -374,7 +374,7 @@ h2 {
     border: 1px solid #fff; /* 枠を水色 */
     border-radius: 20px;       /* 丸くする */
     background: #fff;       /* 背景は薄いグレー */
-    font-size: 25px;           /* 文字サイズ調整 */
+    font-size: 35px;           /* 文字サイズ調整 */
     font-weight: bold;
     color: #1c1c1c;            /* 文字を水色 */
     transition: background 0.2s, color 0.2s;
