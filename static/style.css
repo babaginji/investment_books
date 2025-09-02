@@ -10,15 +10,15 @@
 
 /* body の基本スタイル */
 body { 
-    font-family: sans-serif;  /* フォント設定 */
-    margin: 0;                 /* ページ全体の余白を0に */
-    overflow-x: hidden;        /* 横スクロール禁止 */
+    font-family: sans-serif;  
+    margin: 0;                 
+    overflow-x: hidden;        
 }
 
 /* 見出しの基本スタイル */
 h1 { 
-    margin-bottom: 20px;       /* 下に少しスペースを作る */
-    font-size: 1.5rem;         /* お好みでサイズ調整可 */
+    margin-bottom: 20px;       
+    font-size: 1.5rem;         
     font-weight: normal;
 }
 
@@ -28,24 +28,37 @@ h1 {
 #search-panel {
     display: flex;
     gap: 5px;
-    margin-bottom: 10px;
+    margin: 5px 0 10px 8px;  
     flex-wrap: wrap;
-    width: 100%;
+    width: calc(100% - 8px);
 }
 
 #search-panel input {
     flex: 1 1 auto;
-    padding: 6px 8px;       /* 高さを少し小さく */
-    font-size: 14px;         /* フォントサイズも少し小さめ */
+    padding: 6px 8px;       
+    font-size: 14px;        
     min-width: 150px;
     box-sizing: border-box;
+    outline: none;
+}
+
+#search-panel input:focus {
+    outline: 2px solid #007bff;
 }
 
 #search-panel button {
     flex: 0 0 auto;
-    padding: 6px 10px;       /* ボタンも小さく */
+    padding: 6px 10px;      
     font-size: 14px;
     cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+#search-panel button:hover {
+    background-color: #e6e6e6;
 }
 
 /* -----------------------------
@@ -73,7 +86,6 @@ h1 {
     width: 100%;                     
     height: 36px;                    
     padding: 0 6px;                  
-    margin: 0;                        
     background: #fff;
     border-bottom: 1px solid #ddd;
     cursor: pointer;
@@ -112,7 +124,7 @@ h1 {
 
 /* 「私の本棚」専用リンク */
 .my-shelf-link {
-    margin: 10px 0 15px 0;
+    margin: 10px 0 15px 8px;
     text-align: center;
 }
 .my-shelf-link a {
@@ -136,12 +148,11 @@ h1 {
     display: flex;
     overflow-x: auto;
     gap: 10px;
-    padding: 6px 0 12px;
-    margin: 0 0 20px 0;
-    scroll-snap-type: x mandatory;  /* スクロール位置を揃える */
+    padding: 6px 0 12px 8px;
+    scroll-snap-type: x mandatory;
 }
 .shelf-links::-webkit-scrollbar {
-    height: 6px;  /* 横スクロールバーを細く */
+    height: 6px;  
 }
 .shelf-links::-webkit-scrollbar-thumb {
     background: #bbb;
@@ -180,31 +191,7 @@ h1 {
     margin: 0;
 }
 
-/* スマホは必ず3列 */
-@media (max-width: 600px) {
-    .books-container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-    }
-}
-
-/* タブレット */
-@media (min-width: 601px) and (max-width: 1024px) {
-    .books-container {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 10px;
-    }
-}
-
-/* PC */
-@media (min-width: 1025px) {
-    .books-container {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 12px;
-    }
-}
-
-/* 本カード（本棚用） */
+/* 本カード */
 .books-container .book {
     background: #f9f9f9;
     padding: 6px;
@@ -217,18 +204,15 @@ h1 {
     transform: translateY(-2px);
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-
 .books-container .book img {
     width: 100%;
     height: auto;
     border-radius: 4px;
 }
-
 .books-container .book h3 {
     font-size: 13px;
     margin: 4px 0 2px;
 }
-
 .books-container .book p {
     font-size: 12px;
     margin: 2px 0;
@@ -267,16 +251,12 @@ h1 {
     margin: 0;
     scroll-behavior: smooth;
 }
-
-/* 横スクロール時に端までカードを詰める */
 #search-results .book:first-child {
     margin-left: 0;
 }
 #search-results .book:last-child {
     margin-right: 0;
 }
-
-/* 検索結果のカード */
 #search-results .book {
     flex: 0 0 auto;
     width: 150px;
@@ -288,21 +268,17 @@ h1 {
     position: relative;
     transition: transform 0.2s;
 }
-
 #search-results .book:hover {
     transform: translateY(-5px);
 }
-
 #search-results .book img { 
     width: 100%; 
     border-radius: 5px; 
 }
-
 #search-results .book h3 { 
     font-size: 16px; 
     margin: 5px 0; 
 }
-
 #search-results .book p { 
     font-size: 14px; 
     margin: 3px 0; 
@@ -315,7 +291,6 @@ h1 {
     font-size: 14px;
     margin-top: 5px;
 }
-
 .book .toggle-btn {
     display: block;
     margin-top: 5px;
@@ -325,9 +300,7 @@ h1 {
     text-decoration: underline;
 }
 
-/* -----------------------------
-   ☆マーク
------------------------------ */
+/* ☆マーク */
 .book .star {
     position: absolute;
     top: 5px;
@@ -340,38 +313,30 @@ h1 {
 /* -----------------------------
    レスポンシブ（検索結果）
 ----------------------------- */
-/* スマホ */
 @media (max-width: 600px) {
     #search-results .book {
         width: calc(100% / 2.5 - 10px); 
     }
-
     #search-panel {
         flex-direction: row;
         width: 100%;
         gap: 5px;
     }
-
     #search-panel input {
         width: 50%;
         height: 40px;
     }
-
     #search-panel button {
         height: 40px;
     }
-
     .shelf-links {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
-
     #search-history-box {
         width: 100%;
     }
 }
-
-/* タブレット */
 @media (max-width: 1024px) {
     #search-panel input { min-width: 250px; }
     #search-results .book { width: 130px; }

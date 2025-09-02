@@ -38,18 +38,18 @@
     <script>
         let searchResults = [];
         let myShelf = [];
-    
+        
         // -----------------------------
-        // 本棚データを localStorage に保存
+        // localStorage 永続化
         // -----------------------------
         function saveShelfLocal() {
             localStorage.setItem("myShelf", JSON.stringify(myShelf));
         }
-    
+        
         function loadShelfLocal() {
             return JSON.parse(localStorage.getItem("myShelf") || "[]");
         }
-    
+        
         // -----------------------------
         // 本を検索
         // -----------------------------
@@ -57,56 +57,56 @@
             const titleInput = document.getElementById("title");
             const title = titleInput.value.trim();
             if (!title) return;
-    
+        
             const res = await fetch(`/search?title=${encodeURIComponent(title)}`);
             const books = await res.json();
             searchResults = books;
-    
-            // 検索履歴 & 検索結果保存
+        
+            // 検索履歴と検索結果を保存
             localStorage.setItem("lastSearch", JSON.stringify({
                 title: title,
                 books: books
             }));
-    
+        
             addHistory(title);
             displaySearchResults();
         }
-    
+        
         // -----------------------------
         // 検索結果表示
         // -----------------------------
         function displaySearchResults() {
             const resultsDiv = document.getElementById("search-results");
             resultsDiv.innerHTML = "";
-    
+        
             searchResults.forEach(book => {
                 const bookDiv = document.createElement("div");
                 bookDiv.className = "book";
-    
-                // 星★
+        
+                // 星マーク
                 const star = document.createElement("span");
                 star.className = "star";
                 star.dataset.title = book.title;
                 star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
                 star.onclick = () => toggleStar(book);
-    
+        
                 // 画像リンク
                 const imgLink = document.createElement("a");
                 imgLink.href = book.itemUrl;
                 imgLink.target = "_blank";
-    
+        
                 const img = document.createElement("img");
                 img.src = book.image;
                 img.alt = book.title;
                 imgLink.appendChild(img);
-    
+        
                 const imgWrapper = document.createElement("div");
                 imgWrapper.className = "book-image-wrapper";
                 imgWrapper.appendChild(imgLink);
                 imgWrapper.appendChild(star);
-    
+        
                 bookDiv.appendChild(imgWrapper);
-    
+        
                 // 詳細情報
                 const detailsDiv = document.createElement("div");
                 detailsDiv.className = "book-details";
@@ -117,7 +117,7 @@
                     <p>アマゾン関連情報: 仮情報</p>
                     <p>内容紹介: 仮情報</p>
                 `;
-    
+        
                 const toggleBtn = document.createElement("span");
                 toggleBtn.className = "toggle-btn";
                 toggleBtn.textContent = "詳細を見る";
@@ -130,48 +130,48 @@
                         toggleBtn.textContent = "詳細を見る";
                     }
                 });
-    
+        
                 bookDiv.appendChild(toggleBtn);
                 bookDiv.appendChild(detailsDiv);
-    
+        
                 resultsDiv.appendChild(bookDiv);
             });
         }
-    
+        
         // -----------------------------
         // 「私の本棚」を表示
         // -----------------------------
         function displayMyShelf() {
             const myShelfDiv = document.getElementById("my-shelf-books");
             if (!myShelfDiv) return;
-    
+        
             myShelfDiv.innerHTML = "";
             myShelf.forEach(book => {
                 const bookDiv = document.createElement("div");
                 bookDiv.className = "book";
-    
+        
                 const star = document.createElement("span");
                 star.className = "star";
                 star.dataset.title = book.title;
                 star.textContent = "★";
                 star.onclick = () => toggleStar(book);
-    
+        
                 const imgLink = document.createElement("a");
                 imgLink.href = book.itemUrl;
                 imgLink.target = "_blank";
-    
+        
                 const img = document.createElement("img");
                 img.src = book.image;
                 img.alt = book.title;
                 imgLink.appendChild(img);
-    
+        
                 const imgWrapper = document.createElement("div");
                 imgWrapper.className = "book-image-wrapper";
                 imgWrapper.appendChild(imgLink);
                 imgWrapper.appendChild(star);
-    
+        
                 bookDiv.appendChild(imgWrapper);
-    
+        
                 const detailsDiv = document.createElement("div");
                 detailsDiv.className = "book-details";
                 detailsDiv.style.display = "none";
@@ -181,7 +181,7 @@
                     <p>アマゾン関連情報: 仮情報</p>
                     <p>内容紹介: 仮情報</p>
                 `;
-    
+        
                 const toggleBtn = document.createElement("span");
                 toggleBtn.className = "toggle-btn";
                 toggleBtn.textContent = "詳細を見る";
@@ -194,16 +194,16 @@
                         toggleBtn.textContent = "詳細を見る";
                     }
                 });
-    
+        
                 bookDiv.appendChild(toggleBtn);
                 bookDiv.appendChild(detailsDiv);
-    
+        
                 myShelfDiv.appendChild(bookDiv);
             });
         }
-    
+        
         // -----------------------------
-        // 星の ON/OFF を共通処理に
+        // 星の ON/OFF 共通処理
         // -----------------------------
         async function toggleStar(book) {
             const exists = myShelf.find(b => b.title === book.title);
@@ -229,18 +229,18 @@
             displayMyShelf();
             displaySearchResults();
         }
-    
+        
         // -----------------------------
         // 検索履歴管理
         // -----------------------------
         function getHistory() {
             return JSON.parse(localStorage.getItem("searchHistory") || "[]");
         }
-    
+        
         function saveHistory(history) {
             localStorage.setItem("searchHistory", JSON.stringify(history));
         }
-    
+        
         function addHistory(title) {
             let history = getHistory();
             history = history.filter(item => item !== title);
@@ -249,34 +249,33 @@
             saveHistory(history);
             displayHistory();
         }
-    
+        
         function deleteHistory(title) {
             let history = getHistory().filter(item => item !== title);
             saveHistory(history);
             displayHistory();
         }
-    
+        
         function displayHistory() {
             const box = document.getElementById("search-history-box");
             const input = document.getElementById("title");
             const history = getHistory();
-    
+        
             if (history.length === 0 || document.activeElement !== input) {
                 box.style.display = "none";
                 return;
             }
-    
+        
             const rect = input.getBoundingClientRect();
             box.style.width = rect.width + "px";
             box.style.left = rect.left + "px";
-    
             box.style.display = "block";
             box.innerHTML = "";
-    
+        
             history.forEach(item => {
                 const div = document.createElement("div");
                 div.className = "history-item";
-    
+        
                 const span = document.createElement("span");
                 span.className = "history-title";
                 span.textContent = item;
@@ -284,7 +283,7 @@
                     input.value = item;
                     searchBook();
                 };
-    
+        
                 const btn = document.createElement("button");
                 btn.className = "delete-btn";
                 btn.textContent = "×";
@@ -292,13 +291,13 @@
                     e.stopPropagation();
                     deleteHistory(item);
                 };
-    
+        
                 div.appendChild(span);
                 div.appendChild(btn);
                 box.appendChild(div);
             });
         }
-    
+        
         // -----------------------------
         // 初期ロード & イベント
         // -----------------------------
@@ -312,13 +311,13 @@
             }
             displayMyShelf();
         }
-    
+        
         window.onload = () => {
             loadMyShelf();
-    
+        
             const input = document.getElementById("title");
             const historyBox = document.getElementById("search-history-box");
-    
+        
             // ページロード時に検索結果を復元
             const lastSearch = localStorage.getItem("lastSearch");
             if (lastSearch) {
@@ -327,24 +326,24 @@
                 searchResults = data.books;
                 displaySearchResults();
             }
-    
+        
             input.addEventListener("keydown", (e) => {
                 if (e.key === "Enter") {
                     searchBook();
                     historyBox.style.display = "none";
                 }
             });
-    
+        
             input.addEventListener("focus", () => displayHistory());
             input.addEventListener("input", () => displayHistory());
-    
+        
             historyBox.addEventListener("mousedown", (e) => e.preventDefault());
-    
+        
             input.addEventListener("blur", () => {
                 setTimeout(() => { historyBox.style.display = "none"; }, 200);
             });
         };
-    </script>
-    
+        </script>
+        
 </body>
 </html>
