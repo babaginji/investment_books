@@ -222,11 +222,14 @@ h1 {
 /* -----------------------------
    検索結果カード
 ----------------------------- */
+/* 検索結果のラッパー */
 #search-results-wrapper {
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow-x: auto; /* 横スクロールに戻す */
+    overflow-x: auto;
+    overflow-y: hidden;      /* ← 下方向の余白を削除 */
+    white-space: nowrap;     /* ← 高さを抑制 */
 }
 /* 検索結果の本ボックス */
 #search-results {
@@ -238,33 +241,40 @@ h1 {
     scroll-behavior: smooth;
 }
 
+/* 本カード（検索結果用） */
 #search-results .book {
     flex: 0 0 auto;
-    width: 170px;           /* 必要に応じて調整 */
+    width: 200px;          /* 本の幅 */
+    margin: 0;             /* 外側余白ゼロ */
+    padding: 0;            /* 内側余白ゼロ */
     text-align: center;
-    border: 1px solid #fff; /* ボーダー白に */
-    border-radius: 5px;
-    padding: 3px;
-    background-color: #fff;  /* 背景白に */
+    border: none;          /* 線を消したいなら none */
+    background: #fff;
+    border-radius: 0;
     position: relative;
-    transition: transform 0.2s;
+    display: inline-block; /* ← line-heightの影響を防ぐ */
+    vertical-align: top;   /* ← 下の余白をなくす */
 }
 
 #search-results .book:hover {
     transform: translateY(-5px);
 }
 
-#search-results .book img { 
-    width: 100%; 
-    border-radius: 5px; 
+/* 本の画像 */
+#search-results .book img {
+    display: block;        /* 画像下の余白を消す */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
 }
-#search-results .book h3 { 
-    font-size: 16px; 
-    margin: 5px 0; 
-}
-#search-results .book p { 
-    font-size: 14px; 
-    margin: 3px 0; 
+
+/* p や h3 の余白も消す */
+#search-results .book h3,
+#search-results .book p {
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
 }
 .book-details {
     display: none;        
