@@ -134,9 +134,9 @@ h1 {
     padding: 6px 0 12px 8px;
     scroll-snap-type: x mandatory;
     margin: 5px 0 0 8px; 
-    border-bottom: 3px solid #e0e0e0; /* 薄い灰色の線 */
+    border-bottom: 5px solid #e0e0e0; /* 薄い灰色の線 */
     padding-bottom: 8px;  /* 線と棚リンクの間の余白 */
-    margin-bottom: 12px;  /* 線と検索結果の間の余白 */
+    margin-bottom: 6px;  /* 線と検索結果の間の余白 */
 }
 .shelf-links::-webkit-scrollbar {
     height: 6px;  
