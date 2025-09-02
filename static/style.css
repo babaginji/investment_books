@@ -312,12 +312,13 @@ h1 {
 /* 本カード */
 #view-history .book {
     flex: 0 0 auto;
-    width: 170px;          /* 検索結果200px → 少し小さめ */
+    width: 150px;          /* 検索結果200px → 少し小さめ */
     margin: 0;
     padding: 0;
     text-align: center;
     background: #fff;
     border: none;
+    line-height: 0;     /* 下の余白を消すために追加 */
 }
 
 /* 表紙画像 */
@@ -326,6 +327,8 @@ h1 {
     width: 100%;           /* カード幅いっぱいに */
     height: auto;          /* 縦横比を維持 */
     border-radius: 4px;
+    margin: 0;
+    padding: 0;
 }
 
 
