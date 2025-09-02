@@ -289,39 +289,52 @@ h1 {
     cursor: pointer;
 }
 /* -----------------------------
-   閲覧履歴
+   閲覧履歴の横スクロールリスト
 ----------------------------- */
-/* 閲覧履歴の本ボックス */
+#view-history-wrapper {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;     /* 横スクロール */
+    overflow-y: hidden;   /* 下に余白が出ないように */
+}
+
+/* 履歴の本コンテナ */
 #view-history {
     display: flex;
-    overflow-x: auto;
-    gap: 0;              /* 余白ゼロ */
-    padding: 3px 0;
+    gap: 0;               /* 本同士の余白ゼロ */
     margin: 0;
+    padding: 2px 0;       /* 上下の余白も最小限 */
     scroll-behavior: smooth;
 }
 
+/* 履歴の本カード */
 #view-history .book {
     flex: 0 0 auto;
-    width: 140px;         /* 検索結果の70%サイズ */
-    text-align: center;
+    width: 140px;         /* 検索結果200pxの70% */
+    margin: 0;            /* 外側余白なし */
+    padding: 0;           /* 内側余白なし */
     border: 1px solid #fff;
-    border-radius: 5px;
-    padding: 2px;         /* 内側余白少しだけ */
+    border-radius: 4px;
     background-color: #fff;
+    text-align: center;
     position: relative;
 }
+
+/* 表紙画像 */
 #view-history .book img {
     width: 100%;
-    border-radius: 5px;
+    display: block;       /* 画像下の隙間をなくす */
+    border-radius: 4px;
 }
 
-
-/* 本の詳細情報 */
+/* 詳細テキストなど */
 #view-history .book-details {
-    font-size: 0.7em;        /* 小さめ文字 */
-    text-align: center;
-    margin-top: 4px;
+    font-size: 12px;
+    margin: 0;
+    padding: 2px;
+    text-align: left;
+    line-height: 1.2;
 }
 
 /* -----------------------------
