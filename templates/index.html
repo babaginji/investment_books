@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>投資本棚</h1>
+    <h1></h1>
 
     <!-- 検索窓 -->
     <div id="search-panel">
@@ -23,29 +23,24 @@
         <div id="search-results" class="books-container"></div>
     </div>
 
-    <!-- 棚リンク一覧 -->
+    <!-- 「私の本棚」リンク（特別枠） -->
+    <h2>私の本棚</h2>
+    <div class="my-shelf-link">
+        <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">私の本棚</a>
+    </div>
+
+    <!-- その他の棚リンク（横スクロールで選択） -->
     <h2>棚リンク一覧</h2>
     <div class="shelf-links">
-        {% if "私の本棚" in shelves %}
-        <div class="shelf-link">
-            <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">
-                <img src="{{ url_for('static', filename='images/私の本棚.jpg') }}" alt="私の本棚">
-                <p>私の本棚</p>
-            </a>
-        </div>
-        {% endif %}
-
         {% for shelf in shelves %}
             {% if shelf != "私の本棚" %}
             <div class="shelf-link">
-                <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">
-                    <img src="{{ url_for('static', filename='images/' + shelf + '.jpg') }}" alt="{{ shelf }}">
-                    <p>{{ shelf }}</p>
-                </a>
+                <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">{{ shelf }}</a>
             </div>
-            {% endif %}
-        {% endfor %}
-    </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
     <script>
         let searchResults = [];
         let myShelf = [];
