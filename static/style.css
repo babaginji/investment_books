@@ -30,7 +30,7 @@ h1 {
     gap: 5px;
     margin: 5px 0 10px 8px;  
     flex-wrap: wrap;
-    width: calc(100% - 8px);
+    width: 70%; /* 横幅70％に縮小 */
 }
 
 #search-panel input {
@@ -234,19 +234,19 @@ h1 {
 }
 
 /* -----------------------------
-   検索結果（横スクロール、端いっぱい）
+   検索結果（横スクロール抑制、端いっぱい）
 ----------------------------- */
 #search-results-wrapper {
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    overflow-x: hidden; /* 横スクロール禁止 */
 }
 
 #search-results {
     display: flex;
-    overflow-x: auto;
-    gap: 15px;
+    flex-wrap: wrap;       /* はみ出し防止 */
+    gap: 10px;
     padding: 10px 0;
     margin: 0;
     scroll-behavior: smooth;
@@ -263,7 +263,7 @@ h1 {
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 5px;
-    padding: 10px;
+    padding: 5px;       /* 内側余白半分に縮小 */
     background-color: #f9f9f9;
     position: relative;
     transition: transform 0.2s;
@@ -319,7 +319,7 @@ h1 {
     }
     #search-panel {
         flex-direction: row;
-        width: 100%;
+        width: 70%; /* スマホでも70％ */
         gap: 5px;
     }
     #search-panel input {
@@ -341,5 +341,4 @@ h1 {
     #search-panel input { min-width: 250px; }
     #search-results .book { width: 130px; }
     .shelf-links { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
-    .shelf-link img { height: 130px; }
 }
