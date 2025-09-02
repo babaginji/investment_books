@@ -30,15 +30,21 @@
         // localStorage から復元
         function loadMyShelf() {
             myShelf = JSON.parse(localStorage.getItem("myShelf") || "[]");
-            displayStars();
+            displayBooks();
         }
         
-        // ★表示と同期
-        function displayStars() {
-            document.querySelectorAll('#books-container .book').forEach(bookDiv => {
+        // 本リストを localStorage に基づいて描画
+        function displayBooks() {
+            const container = document.getElementById('books-container');
+            if (!container) return;
+        
+            // サーバー描画の既存要素をすべて取得
+            const bookDivs = Array.from(container.querySelectorAll('.book'));
+        
+            bookDivs.forEach(bookDiv => {
                 const title = bookDiv.querySelector('h3').textContent;
         
-                // 既存の★を削除
+                // ★を作る
                 let star = bookDiv.querySelector('.star');
                 if (!star) {
                     star = document.createElement('span');
@@ -47,10 +53,10 @@
                     bookDiv.insertBefore(star, bookDiv.firstChild);
                 }
         
-                // localStorage に応じて★/☆設定
+                // ★/☆ を localStorage に基づき設定
                 star.textContent = myShelf.find(b => b.title === title) ? '★' : '☆';
         
-                // クリックで追加/削除
+                // クリック処理
                 star.onclick = () => {
                     const author = bookDiv.querySelector('p').textContent.replace('著者: ', '');
                     const price = parseInt(bookDiv.querySelectorAll('p')[1].textContent.replace('価格: ¥', ''));
@@ -71,7 +77,6 @@
             });
         }
         
-        // ページロードで localStorage から復元
         window.addEventListener('DOMContentLoaded', loadMyShelf);
         </script>
         
