@@ -1,15 +1,25 @@
 /* -----------------------------
-   全体スタイル
+   全体リセット＆基本スタイル
 ----------------------------- */
-body { 
-    font-family: sans-serif;  
-    padding: 20px;             
+/* すべての要素の余白をなくし、幅計算を崩さない */
+* {
     margin: 0;
-    overflow-x: hidden; /* 横スクロール禁止 */
+    padding: 0;
+    box-sizing: border-box;
 }
 
+/* body の基本スタイル */
+body { 
+    font-family: sans-serif;  /* フォント設定 */
+    margin: 0;                 /* ページ全体の余白を0に */
+    overflow-x: hidden;        /* 横スクロール禁止 */
+}
+
+/* 見出しの基本スタイル */
 h1 { 
-    margin-bottom: 20px;       
+    margin-bottom: 20px;       /* 下に少しスペースを作る */
+    font-size: 1.5rem;         /* お好みでサイズ調整可 */
+    font-weight: normal;
 }
 
 /* -----------------------------
