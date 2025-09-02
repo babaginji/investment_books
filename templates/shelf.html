@@ -32,7 +32,7 @@
         const shelfName = "{{ shelf_name }}";
         const shelfBooksFromServer = {{ books|tojson }};
         let myShelf = [];
-
+        
         // -----------------------------
         // localStorage から「私の本棚」を取得
         // -----------------------------
@@ -46,14 +46,16 @@
         function saveMyShelf() {
             localStorage.setItem("myShelf", JSON.stringify(myShelf));
         }
-
+        
         // -----------------------------
         // 本ボックス作成
         // -----------------------------
         function createBookDiv(book) {
             const bookDiv = document.createElement('div');
             bookDiv.className = 'book';
-
+            bookDiv.style.position = 'relative';
+        
+            // 星マーク（削除用）
             const star = document.createElement('span');
             star.className = 'star';
             star.textContent = '★';
@@ -64,7 +66,8 @@
                 displayShelf();
             };
             bookDiv.appendChild(star);
-
+        
+            // 画像
             const imgLink = document.createElement('a');
             imgLink.href = book.itemUrl;
             imgLink.target = '_blank';
@@ -73,19 +76,21 @@
             img.alt = book.title;
             imgLink.appendChild(img);
             bookDiv.appendChild(imgLink);
-
+        
+            // タイトル・著者・価格
             const titleH3 = document.createElement('h3');
             titleH3.textContent = book.title;
             bookDiv.appendChild(titleH3);
-
+        
             const authorP = document.createElement('p');
             authorP.textContent = '著者: ' + book.author;
             bookDiv.appendChild(authorP);
-
+        
             const priceP = document.createElement('p');
             priceP.textContent = '価格: ¥' + book.price;
             bookDiv.appendChild(priceP);
-
+        
+            // 既読ボタン
             const readBtn = document.createElement('button');
             readBtn.textContent = book.read ? '未読に戻す' : '既読にする';
             readBtn.style.fontSize = '12px';
@@ -97,124 +102,123 @@
                 displayShelf();
             };
             bookDiv.appendChild(readBtn);
-
+        
+            // ページ帯（右上）
+            const badge = document.createElement('div');
+            badge.className = 'page-badge';
+            badge.style.position = 'absolute';
+            badge.style.top = '5px';
+            badge.style.right = '5px';
+            badge.style.backgroundColor = 'white';
+            badge.style.padding = '2px 6px';
+            badge.style.fontSize = '12px';
+            badge.style.transform = 'rotate(-15deg)';
+            badge.style.transformOrigin = 'top right';
+            badge.textContent = book.page || '';
+            bookDiv.appendChild(badge);
+        
+            // メモボタン（右下）
+            const memoBtn = document.createElement('span');
+            memoBtn.textContent = '✏';
+            memoBtn.style.position = 'absolute';
+            memoBtn.style.bottom = '5px';
+            memoBtn.style.right = '5px';
+            memoBtn.style.fontSize = '16px';
+            memoBtn.style.cursor = 'pointer';
+            bookDiv.appendChild(memoBtn);
+        
+            // -----------------------------
+            // メモモーダル
+            // -----------------------------
+            const memoModal = document.createElement('div');
+            memoModal.style.position = 'fixed';
+            memoModal.style.top = '50%';
+            memoModal.style.left = '50%';
+            memoModal.style.transform = 'translate(-50%, -50%)';
+            memoModal.style.background = '#fff';
+            memoModal.style.border = '1px solid #ccc';
+            memoModal.style.padding = '15px';
+            memoModal.style.zIndex = 10000;
+            memoModal.style.display = 'none';
+            memoModal.style.width = '80%';
+            memoModal.style.maxWidth = '400px';
+            memoModal.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+            memoModal.style.borderRadius = '8px';
+        
+            const pageInput = document.createElement('input');
+            pageInput.type = 'text';
+            pageInput.placeholder = 'ページ数';
+            pageInput.style.width = '100%';
+            pageInput.style.marginBottom = '10px';
+            memoModal.appendChild(pageInput);
+        
+            const memoTextarea = document.createElement('textarea');
+            memoTextarea.placeholder = 'メモを書く';
+            memoTextarea.style.width = '100%';
+            memoTextarea.style.height = '100px';
+            memoModal.appendChild(memoTextarea);
+        
+            const saveMemoBtn = document.createElement('button');
+            saveMemoBtn.textContent = '保存';
+            saveMemoBtn.style.marginTop = '10px';
+            saveMemoBtn.onclick = () => {
+                book.page = pageInput.value;
+                book.memo = memoTextarea.value;
+                badge.textContent = book.page || '';
+                memoModal.style.display = 'none';
+                saveMyShelf();
+                displayShelf();
+            };
+            memoModal.appendChild(saveMemoBtn);
+        
+            const cancelMemoBtn = document.createElement('button');
+            cancelMemoBtn.textContent = 'キャンセル';
+            cancelMemoBtn.style.marginLeft = '10px';
+            cancelMemoBtn.onclick = () => {
+                memoModal.style.display = 'none';
+            };
+            memoModal.appendChild(cancelMemoBtn);
+        
+            document.body.appendChild(memoModal);
+        
+            memoBtn.onclick = () => {
+                pageInput.value = book.page || '';
+                memoTextarea.value = book.memo || '';
+                memoModal.style.display = 'block';
+            };
+        
             return bookDiv;
         }
-        // 本カードに右下のメモアイコン追加
-        const memoBtn = document.createElement('span');
-        memoBtn.textContent = '✏';
-        memoBtn.style.position = 'absolute';
-        memoBtn.style.bottom = '5px';
-        memoBtn.style.right = '5px';
-        memoBtn.style.fontSize = '16px';
-        memoBtn.style.cursor = 'pointer';
-        bookDiv.appendChild(memoBtn);
-
-        // メモモーダル作成
-        const memoModal = document.createElement('div');
-        memoModal.style.position = 'fixed';
-        memoModal.style.top = '50%';
-        memoModal.style.left = '50%';
-        memoModal.style.transform = 'translate(-50%, -50%)';
-        memoModal.style.background = '#fff';
-        memoModal.style.border = '1px solid #ccc';
-        memoModal.style.padding = '15px';
-        memoModal.style.zIndex = 10000;
-        memoModal.style.display = 'none';
-        memoModal.style.width = '80%';
-        memoModal.style.maxWidth = '400px';
-        memoModal.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-        memoModal.style.borderRadius = '8px';
-
-        // ページ入力
-        const pageInput = document.createElement('input');
-        pageInput.type = 'text';
-        pageInput.placeholder = 'ページ数';
-        pageInput.style.width = '100%';
-        pageInput.style.marginBottom = '10px';
-        memoModal.appendChild(pageInput);
-
-        // メモ本文
-        const memoTextarea = document.createElement('textarea');
-        memoTextarea.placeholder = 'メモを書く';
-        memoTextarea.style.width = '100%';
-        memoTextarea.style.height = '100px';
-        memoModal.appendChild(memoTextarea);
-
-        // 保存ボタン
-        const saveMemoBtn = document.createElement('button');
-        saveMemoBtn.textContent = '保存';
-        saveMemoBtn.style.marginTop = '10px';
-        saveMemoBtn.onclick = () => {
-            book.page = pageInput.value;    // ページ数を本データに保存
-            book.memo = memoTextarea.value; // メモ本文を保存
-            updatePageBadge(bookDiv, book.page);
-            memoModal.style.display = 'none';
-            saveShelfLocal();
-        };
-        memoModal.appendChild(saveMemoBtn);
-
-        // キャンセルボタン
-        const cancelMemoBtn = document.createElement('button');
-        cancelMemoBtn.textContent = 'キャンセル';
-        cancelMemoBtn.style.marginLeft = '10px';
-        cancelMemoBtn.onclick = () => {
-            memoModal.style.display = 'none';
-        };
-        memoModal.appendChild(cancelMemoBtn);
-
-        document.body.appendChild(memoModal);
-
-        // メモボタン押したらモーダル表示
-        memoBtn.onclick = () => {
-            pageInput.value = book.page || '';
-            memoTextarea.value = book.      memo || '';
-            memoModal.style.display = 'block';
-        };
-
-        // 本カード右上のページ帯表示関数
-        function updatePageBadge(bookDiv, page) {
-            let badge = bookDiv.querySelector('.page-badge');
-            if (!badge) {
-                badge = document.createElement('div');
-                badge.className = 'page-badge';
-                bookDiv.appendChild(badge);
-            }
-            badge.textContent = page || '';
-        }
-        updatePageBadge(bookDiv, book.page);
-
+        
         // -----------------------------
-        // 本棚描画（表示モード: "all" or "read"）
-        // -----------------------------
-        let currentTab = "all";
+        // 本棚描画（all / read）
+        let currentTab = 'all';
         function displayShelf() {
             const container = document.getElementById('books-container');
             container.innerHTML = '';
-
             myShelf.forEach(book => {
-                if (currentTab === "all" || (currentTab === "read" && book.read)) {
+                if (currentTab === 'all' || (currentTab === 'read' && book.read)) {
                     container.appendChild(createBookDiv(book));
                 }
             });
         }
-
+        
         // -----------------------------
-        // タブ切替処理
+        // タブ切替
         // -----------------------------
         document.getElementById('tab-all').onclick = () => {
-            currentTab = "all";
+            currentTab = 'all';
             document.getElementById('tab-all').classList.add('active');
             document.getElementById('tab-read').classList.remove('active');
             displayShelf();
         };
         document.getElementById('tab-read').onclick = () => {
-            currentTab = "read";
+            currentTab = 'read';
             document.getElementById('tab-read').classList.add('active');
             document.getElementById('tab-all').classList.remove('active');
             displayShelf();
         };
-
+        
         // -----------------------------
         // 初期ロード
         // -----------------------------
@@ -222,6 +226,7 @@
             myShelf = loadMyShelf();
             displayShelf();
         };
-    </script>
+        </script>
+        
 </body>
 </html>
