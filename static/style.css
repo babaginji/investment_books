@@ -224,26 +224,32 @@ h1 {
     padding: 0;
     overflow-x: auto; /* 横スクロールに戻す */
 }
+/* 検索結果の本ボックス */
 #search-results {
     display: flex;
-    gap: 10px;
+    overflow-x: auto;
+    gap: 0;           /* ボックス間の距離を0に */
     padding: 10px 0;
     margin: 0;
+    scroll-behavior: smooth;
 }
+
 #search-results .book {
     flex: 0 0 auto;
-    width: 150px;
+    width: 150px;           /* 必要に応じて調整 */
     text-align: center;
-    border: 1px solid #ccc;
+    border: 1px solid #fff; /* ボーダー白に */
     border-radius: 5px;
-    padding: 5px; /* 内側余白半分 */
-    background-color: #f9f9f9;
+    padding: 10px;
+    background-color: #fff;  /* 背景白に */
     position: relative;
     transition: transform 0.2s;
 }
+
 #search-results .book:hover {
     transform: translateY(-5px);
 }
+
 #search-results .book img { 
     width: 100%; 
     border-radius: 5px; 
