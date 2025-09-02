@@ -236,6 +236,9 @@ h1 {
     padding: 3px 0;
     margin: 0;
     scroll-behavior: smooth;
+    border-bottom: 10px solid #e0e0e0; /* 薄い灰色の線 */
+    padding-bottom: 8px;  /* 線と棚リンクの間の余白 */
+    margin-bottom: 6px;  /* 線と検索結果の間の余白 */
 }
 
 #search-results .book {
