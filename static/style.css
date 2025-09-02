@@ -382,12 +382,12 @@ h2 {
 }
 
 .tab {
-    padding: 15px 30px;        /* 上下15px、左右30pxに調整 */
+    padding: 13px 20px;        /* 上下15px、左右30pxに調整 */
     cursor: pointer;
     border: 1px solid #fff; /* 枠を水色 */
     border-radius: 20px;       /* 丸くする */
     background: #fff;       /* 背景は薄いグレー */
-    font-size: 17px;           /* 文字サイズ調整 */
+    font-size: 10px;           /* 文字サイズ調整 */
     font-weight: bold;
     color: #1c1c1c;            /* 文字を水色 */
     transition: background 0.2s, color 0.2s;
