@@ -13,7 +13,12 @@
     </div>
 
     <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
-
+    <h2>未読</h2>
+    <div id="unread-container" class="books-container"></div>
+    
+    <h2>既読</h2>
+    <div id="read-container" class="books-container"></div>
+    
     <script>
         const shelfName = "{{ shelf_name }}"; 
         const shelfBooksFromServer = {{ books|tojson }};
@@ -25,77 +30,86 @@
         function saveMyShelf(books) {
             localStorage.setItem("myShelf", JSON.stringify(books));
         }
-        
+        function createBookDiv(book) {
+            const bookDiv = document.createElement('div');
+            bookDiv.className = 'book';
+
+            // 星マーク（削除用）
+            const star = document.createElement('span');
+            star.className = '      star';
+            star.textContent = '★';
+            star.style.cursor = 'pointer';
+            star.onclick = () => {
+                myShelf = myShelf.filter(b => b.title !== book.title);
+                saveShelfLocal();
+                displayShelf();
+            };
+            bookDiv.appendChild(star);
+
+            // 画像
+            const imgLink = document.createElement('a');
+            imgLink.href = book.itemUrl;
+            imgLink.target = '_blank';
+            const img = document.createElement('img');
+            img.src = book.image;
+            img.alt = book.title;
+            imgLink.appendChild(img);
+            bookDiv.appendChild(imgLink);
+
+            // タイトル・著者・価格
+            const titleH3 = document.createElement('h3');
+            titleH3.textContent = book.title;
+            bookDiv.appendChild(titleH3);
+
+            const authorP = document.createElement('p');
+            authorP.textContent = '著者: ' + book.author;
+            bookDiv.appendChild(authorP);
+
+            const priceP = document.createElement('p');
+            priceP.textContent = '価格: ¥' + book.price;
+            bookDiv.appendChild(priceP);
+
+            // ←左下に既読ボタン追加
+            const readBtn = document.createElement('button');
+            readBtn.textContent = book.read ? '未読に戻す' : '既読にする';
+            readBtn.style.position = 'absolute';
+            readBtn.style.bottom = '5px';
+            readBtn.style.left = '5px';
+            readBtn.style.fontSize = '12px';
+            readBtn.style.padding = '2px 4px';
+            readBtn.onclick = () => {
+                book.read = !book.read;
+                saveShelfLocal();
+                displayShelf();
+            };
+            bookDiv.appendChild(readBtn);
+
+            return bookDiv;
+        }
+
         // 本棚描画
         function displayShelf() {
-            const container = document.getElementById('books-container');
-            container.innerHTML = '';
-        
-            let booksToShow = [];
-        
-            if (shelfName === "私の本棚") {
-                // 「私の本棚」は localStorage の内容を表示
-                booksToShow = loadMyShelf();
-            } else {
-                // 他の棚はサーバー棚の本だけ表示
-                booksToShow = shelfBooksFromServer;
-            }
-        
-            booksToShow.forEach(book => {
-                const bookDiv = document.createElement('div');
-                bookDiv.className = 'book';
-        
-                const star = document.createElement('span');
-                star.className = 'star';
-                star.textContent = '★';
-                star.style.cursor = 'pointer';
-                // 「私の本棚」だけ星を押せる
-                if (shelfName === "私の本棚") {
-                    star.style.color = 'gold';
-                    star.onclick = () => {
-                        let myShelf = loadMyShelf();
-                        const index = myShelf.findIndex(b => b.title === book.title);
-                        if (index === -1) {
-                            myShelf.push(book);
-                            star.style.color = 'gold';
-                        } else {
-                            myShelf.splice(index, 1);
-                            star.style.color = 'gray';
-                        }
-                        saveMyShelf(myShelf);
-                        displayShelf();
-                    };
+            const unreadContainer = document.getElementById('unread-container');
+            const readContainer = document.getElementById('read-container');
+
+            unreadContainer.innerHTML = '';
+            readContainer.innerHTML = '';
+
+            myShelf.forEach(book => {
+                const bookDiv = createBookDiv(book);
+                if (book.read) {
+                    readContainer.appendChild(bookDiv);
+                } else {
+                    unreadContainer.appendChild(bookDiv);
                 }
-        
-                const imgLink = document.createElement('a');
-                imgLink.href = book.itemUrl;
-                imgLink.target = '_blank';
-        
-                const img = document.createElement('img');
-                img.src = book.image;
-                img.alt = book.title;
-                imgLink.appendChild(img);
-        
-                const titleH3 = document.createElement('h3');
-                titleH3.textContent = book.title;
-        
-                const authorP = document.createElement('p');
-                authorP.textContent = '著者: ' + book.author;
-        
-                const priceP = document.createElement('p');
-                priceP.textContent = '価格: ¥' + book.price;
-        
-                bookDiv.appendChild(star);
-                bookDiv.appendChild(imgLink);
-                bookDiv.appendChild(titleH3);
-                bookDiv.appendChild(authorP);
-                bookDiv.appendChild(priceP);
-        
-                container.appendChild(bookDiv);
             });
         }
-        
-        window.onload = displayShelf;
+
+        window.onload = () => {
+            myShelf = loadShelfLocal();
+            displayShelf();
+        };
+
         </script>
         
 </body>
