@@ -1,21 +1,16 @@
 /* -----------------------------
    全体リセット＆基本スタイル
 ----------------------------- */
-/* すべての要素の余白をなくし、幅計算を崩さない */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-
-/* body の基本スタイル */
 body { 
     font-family: sans-serif;  
     margin: 0;                 
     overflow-x: hidden;        
 }
-
-/* 見出しの基本スタイル */
 h1 { 
     margin-bottom: 20px;       
     font-size: 1.5rem;         
@@ -29,10 +24,8 @@ h1 {
     display: flex;
     gap: 5px;
     margin: 5px 0 10px 8px;  
-    flex-wrap: wrap;
-    width: 70%; /* 横幅70％に縮小 */
+    width: 70%; /* 横幅70％ */
 }
-
 #search-panel input {
     flex: 1 1 auto;
     padding: 6px 8px;       
@@ -41,11 +34,9 @@ h1 {
     box-sizing: border-box;
     outline: none;
 }
-
 #search-panel input:focus {
     outline: 2px solid #007bff;
 }
-
 #search-panel button {
     flex: 0 0 auto;
     padding: 6px 10px;      
@@ -56,7 +47,6 @@ h1 {
     border-radius: 4px;
     transition: background-color 0.2s;
 }
-
 #search-panel button:hover {
     background-color: #e6e6e6;
 }
@@ -78,7 +68,6 @@ h1 {
     z-index: 1000;                   
     display: none;                   
 }
-
 .history-item {
     display: flex;
     justify-content: space-between;
@@ -92,18 +81,15 @@ h1 {
     font-size: 14px;
     box-sizing: border-box;
 }
-
 .history-item:hover {
     background: #eef;
 }
-
 .history-title {
     flex-grow: 1;
     text-align: left;
     font-size: 14px;
     line-height: 36px;               
 }
-
 .delete-btn {
     background: none;
     border: none;
@@ -121,10 +107,8 @@ h1 {
 /* -----------------------------
    トップページ: 棚リンク一覧
 ----------------------------- */
-
-/* 「私の本棚」専用リンク */
 .my-shelf-link {
-    margin: 10px 0 15px 8px;
+    margin: 10px 0 15px 12px; /* 左端に少しマージン */
     text-align: center;
 }
 .my-shelf-link a {
@@ -142,11 +126,9 @@ h1 {
     background: #005fa3;
     transform: scale(1.03);
 }
-
-/* その他の棚リンク（横スクロール式） */
 .shelf-links {
     display: flex;
-    overflow-x: auto;
+    overflow-x: auto; /* 横スクロールに戻す */
     gap: 10px;
     padding: 6px 0 12px 8px;
     scroll-snap-type: x mandatory;
@@ -179,7 +161,6 @@ h1 {
     color: #005fa3;
     transform: scale(1.05);
 }
-
 /* -----------------------------
    本棚内の本カードコンテナ
 ----------------------------- */
@@ -234,28 +215,19 @@ h1 {
 }
 
 /* -----------------------------
-   検索結果（横スクロール抑制、端いっぱい）
+   検索結果カード
 ----------------------------- */
 #search-results-wrapper {
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow-x: hidden; /* 横スクロール禁止 */
+    overflow-x: auto; /* 横スクロールに戻す */
 }
-
 #search-results {
     display: flex;
-    flex-wrap: wrap;       /* はみ出し防止 */
     gap: 10px;
     padding: 10px 0;
     margin: 0;
-    scroll-behavior: smooth;
-}
-#search-results .book:first-child {
-    margin-left: 0;
-}
-#search-results .book:last-child {
-    margin-right: 0;
 }
 #search-results .book {
     flex: 0 0 auto;
@@ -263,7 +235,7 @@ h1 {
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 5px;
-    padding: 5px;       /* 内側余白半分に縮小 */
+    padding: 5px; /* 内側余白半分 */
     background-color: #f9f9f9;
     position: relative;
     transition: transform 0.2s;
@@ -283,8 +255,6 @@ h1 {
     font-size: 14px; 
     margin: 3px 0; 
 }
-
-/* トグル詳細用 */
 .book-details {
     display: none;        
     text-align: left;
@@ -299,8 +269,6 @@ h1 {
     cursor: pointer;
     text-decoration: underline;
 }
-
-/* ☆マーク */
 .book .star {
     position: absolute;
     top: 5px;
@@ -319,7 +287,7 @@ h1 {
     }
     #search-panel {
         flex-direction: row;
-        width: 70%; /* スマホでも70％ */
+        width: 70%;
         gap: 5px;
     }
     #search-panel input {
@@ -342,3 +310,5 @@ h1 {
     #search-results .book { width: 130px; }
     .shelf-links { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
 }
+
+
