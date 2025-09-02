@@ -25,69 +25,54 @@
 
     <!-- ★判定用スクリプト -->
     <script>
-    let myShelf = [];
-
-    async function loadMyShelf() {
-        // 現在のユーザーの「私の本棚」を取得
-        const res = await fetch('/get_my_shelf');
-        const data = await res.json();
-        myShelf = data.my_shelf || [];
-        displayStars();
-    }
-
-    function displayStars() {
-        // 各本に★/☆を追加
-        document.querySelectorAll('#books-container .book').forEach(bookDiv => {
-            const title = bookDiv.querySelector('h3').textContent;
-
-            // 既に星があれば削除
-            const existingStar = bookDiv.querySelector('.star');
-            if (existingStar) existingStar.remove();
-
-            const star = document.createElement('span');
-            star.className = 'star';
-            star.textContent = myShelf.find(b => b.title === title) ? '★' : '☆';
-            star.style.cursor = 'pointer';
-
-            // クリックで追加/削除できる
-            star.onclick = async (e) => {
-                e.stopPropagation();
-                const book = {
-                    title: title,
-                    author: bookDiv.querySelector('p').textContent.replace('著者: ', ''),
-                    price: parseInt(bookDiv.querySelectorAll('p')[1].textContent.replace('価格: ¥', '')),
-                    image: bookDiv.querySelector('img').src,
-                    itemUrl: bookDiv.querySelector('a').href
+        let myShelf = [];
+        
+        // localStorage から復元
+        function loadMyShelf() {
+            myShelf = JSON.parse(localStorage.getItem("myShelf") || "[]");
+            displayStars();
+        }
+        
+        // 本の★を表示
+        function displayStars() {
+            document.querySelectorAll('#books-container .book').forEach(bookDiv => {
+                const title = bookDiv.querySelector('h3').textContent;
+        
+                const existingStar = bookDiv.querySelector('.star');
+                if (existingStar) existingStar.remove();
+        
+                const star = document.createElement('span');
+                star.className = 'star';
+                star.textContent = myShelf.find(b => b.title === title) ? '★' : '☆';
+                star.style.cursor = 'pointer';
+        
+                star.onclick = () => {
+                    const author = bookDiv.querySelector('p').textContent.replace('著者: ', '');
+                    const price = parseInt(bookDiv.querySelectorAll('p')[1].textContent.replace('価格: ¥', ''));
+                    const image = bookDiv.querySelector('img').src;
+                    const itemUrl = bookDiv.querySelector('a').href;
+        
+                    const index = myShelf.findIndex(b => b.title === title);
+                    if (index === -1) {
+                        // 追加
+                        myShelf.push({ title, author, price, image, itemUrl });
+                        star.textContent = '★';
+                    } else {
+                        // 削除
+                        myShelf.splice(index, 1);
+                        star.textContent = '☆';
+                    }
+        
+                    // localStorage に保存
+                    localStorage.setItem("myShelf", JSON.stringify(myShelf));
                 };
-
-                if (star.textContent === '☆') {
-                    const res = await fetch('/add_to_my_shelf', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ book })
-                    });
-                    const data = await res.json();
-                    myShelf = data.my_shelf;
-                    star.textContent = '★';
-                } else {
-                    await fetch('/remove_from_my_shelf', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title })
-                    });
-                    myShelf = myShelf.filter(b => b.title !== title);
-                    star.textContent = '☆';
-                }
-            };
-
-            // 本の最初に追加
-            bookDiv.insertBefore(star, bookDiv.firstChild);
-        });
-    }
-
-    window.onload = () => {
-        loadMyShelf();
-    };
-    </script>
+        
+                bookDiv.insertBefore(star, bookDiv.firstChild);
+            });
+        }
+        
+        window.onload = loadMyShelf;
+        </script>
+        
 </body>
 </html>
