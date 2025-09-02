@@ -8,40 +8,50 @@
 <body>
     <h1>{{ shelf_name }}</h1>
 
-    <div class="books-container" id="books-container">
-        <!-- JS が localStorage から本棚を描画 -->
-    </div>
-
-    <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
     <h2>未読</h2>
     <div id="unread-container" class="books-container"></div>
-    
+
     <h2>既読</h2>
     <div id="read-container" class="books-container"></div>
-    
+
+    <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
+
     <script>
         const shelfName = "{{ shelf_name }}"; 
         const shelfBooksFromServer = {{ books|tojson }};
-        
+        let myShelf = [];
+
+        // -----------------------------
         // localStorage から「私の本棚」を取得
+        // -----------------------------
         function loadMyShelf() {
-            return JSON.parse(localStorage.getItem("myShelf") || "[]");
+            const data = JSON.parse(localStorage.getItem("myShelf") || "[]");
+            // read フラグが無い本には false を付与
+            return data.map(book => {
+                if (typeof book.read === 'undefined') book.read = false;
+                return book;
+            });
         }
-        function saveMyShelf(books) {
-            localStorage.setItem("myShelf", JSON.stringify(books));
+
+        function saveMyShelf() {
+            localStorage.setItem("myShelf", JSON.stringify(myShelf));
         }
+
+        // -----------------------------
+        // 本ボックス作成
+        // -----------------------------
         function createBookDiv(book) {
             const bookDiv = document.createElement('div');
             bookDiv.className = 'book';
 
             // 星マーク（削除用）
             const star = document.createElement('span');
-            star.className = '      star';
+            star.className = 'star';
             star.textContent = '★';
             star.style.cursor = 'pointer';
             star.onclick = () => {
                 myShelf = myShelf.filter(b => b.title !== book.title);
-                saveShelfLocal();
+                saveMyShelf();
                 displayShelf();
             };
             bookDiv.appendChild(star);
@@ -69,17 +79,15 @@
             priceP.textContent = '価格: ¥' + book.price;
             bookDiv.appendChild(priceP);
 
-            // ←左下に既読ボタン追加
+            // 既読ボタン（absolute ではなく普通に配置）
             const readBtn = document.createElement('button');
             readBtn.textContent = book.read ? '未読に戻す' : '既読にする';
-            readBtn.style.position = 'absolute';
-            readBtn.style.bottom = '5px';
-            readBtn.style.left = '5px';
             readBtn.style.fontSize = '12px';
             readBtn.style.padding = '2px 4px';
+            readBtn.style.marginTop = '4px';
             readBtn.onclick = () => {
                 book.read = !book.read;
-                saveShelfLocal();
+                saveMyShelf();
                 displayShelf();
             };
             bookDiv.appendChild(readBtn);
@@ -87,7 +95,9 @@
             return bookDiv;
         }
 
+        // -----------------------------
         // 本棚描画
+        // -----------------------------
         function displayShelf() {
             const unreadContainer = document.getElementById('unread-container');
             const readContainer = document.getElementById('read-container');
@@ -105,8 +115,13 @@
             });
         }
 
-        window.onload = displayShelf;
-        </script>
-        
+        // -----------------------------
+        // 初期ロード
+        // -----------------------------
+        window.onload = () => {
+            myShelf = loadMyShelf();
+            displayShelf();
+        };
+    </script>
 </body>
 </html>
