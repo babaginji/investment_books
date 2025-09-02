@@ -298,12 +298,13 @@ h1 {
     padding: 0;
     overflow-x: auto;
     overflow-y: hidden;
-    white-space: nowrap; /* 横並びを強制 */
+    white-space: nowrap; /* 横並び強制 */
 }
 
 /* 閲覧履歴リスト */
 #view-history {
     display: flex;
+    gap: 0;          /* 本同士の隙間を完全になくす */
     margin: 0;
     padding: 0;
 }
@@ -311,20 +312,22 @@ h1 {
 /* 本カード */
 #view-history .book {
     flex: 0 0 auto;
-    margin: 0;          /* 外側余白なし */
-    padding: 0;         /* 内側余白なし */
-    width: auto;        /* 固定幅を解除して画像サイズに合わせる */
+    width: 170px;          /* 検索結果200px → 少し小さめ */
+    margin: 0;
+    padding: 0;
     text-align: center;
     background: #fff;
+    border: none;
 }
 
 /* 表紙画像 */
 #view-history .book img {
-    display: block;     /* 画像下の余白を削除 */
-    height: 150px;      /* 高さで揃える（検索結果より小さめ） */
-    width: auto;        /* 縦横比を維持 */
+    display: block;        /* 画像下の余白を消す */
+    width: 100%;           /* カード幅いっぱいに */
+    height: auto;          /* 縦横比を維持 */
     border-radius: 4px;
 }
+
 
 /* -----------------------------
    レスポンシブ（検索結果）
