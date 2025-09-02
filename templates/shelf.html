@@ -15,27 +15,27 @@
     <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
 
     <script>
-    let myShelf = [];
+    const shelfName = "{{ shelf_name }}"; // Jinja2 で棚名を取得
 
     // -----------------------------
-    // localStorage から「私の本棚」をロード
+    // localStorage から指定棚をロード
     // -----------------------------
-    function loadShelfLocal() {
-        return JSON.parse(localStorage.getItem("myShelf") || "[]");
+    function loadShelfLocal(name) {
+        return JSON.parse(localStorage.getItem(name) || "[]");
     }
 
-    function saveShelfLocal() {
-        localStorage.setItem("myShelf", JSON.stringify(myShelf));
+    function saveShelfLocal(name, books) {
+        localStorage.setItem(name, JSON.stringify(books));
     }
 
     // -----------------------------
-    // 「私の本棚」を描画
+    // 本棚を描画
     // -----------------------------
-    function displayShelf() {
+    function displayShelf(books) {
         const container = document.getElementById('books-container');
         container.innerHTML = '';
 
-        myShelf.forEach(book => {
+        books.forEach(book => {
             const bookDiv = document.createElement('div');
             bookDiv.className = 'book';
 
@@ -44,11 +44,27 @@
             star.textContent = '★';
             star.style.cursor = 'pointer';
 
+            // ★が塗られているかチェック
+            const shelfBooks = loadShelfLocal("私の本棚");
+            if (shelfBooks.some(b => b.title === book.title)) {
+                star.style.color = 'gold';
+            } else {
+                star.style.color = 'gray';
+            }
+
             star.onclick = () => {
-                // 削除処理
-                myShelf = myShelf.filter(b => b.title !== book.title);
-                saveShelfLocal();
-                displayShelf();
+                let myShelf = loadShelfLocal("私の本棚");
+                const index = myShelf.findIndex(b => b.title === book.title);
+                if (index === -1) {
+                    // 追加
+                    myShelf.push(book);
+                    star.style.color = 'gold';
+                } else {
+                    // 削除
+                    myShelf.splice(index, 1);
+                    star.style.color = 'gray';
+                }
+                saveShelfLocal("私の本棚", myShelf);
             };
 
             const imgLink = document.createElement('a');
@@ -83,8 +99,8 @@
     // 初期ロード
     // -----------------------------
     window.onload = () => {
-        myShelf = loadShelfLocal();
-        displayShelf();
+        const books = loadShelfLocal(shelfName);
+        displayShelf(books);
     };
     </script>
 </body>
