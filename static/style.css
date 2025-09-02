@@ -355,16 +355,16 @@ h2 {
 .tabs {
     display: flex;
     justify-content: center;   /* 中央揃え */
-    gap: 20px;                 /* タブ間の距離 */
+    gap: 30px;                 /* タブ間の距離 */
     margin-bottom: 15px;
 }
 .tab {
-    padding: 10px 20px;        /* 大きめに */
+    padding: 15px 30px;        /* 大きめに */
     cursor: pointer;
     border: 1px solid #ccc;
     border-radius: 6px;
     background: #f9f9f9;
-    font-size: 16px;           /* フォント大きく */
+    font-size: 25px;           /* フォント大きく */
     font-weight: bold;
     transition: background 0.2s, color 0.2s;
 }
