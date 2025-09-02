@@ -297,7 +297,7 @@ h1 {
 #view-history-wrapper h2,
 h2 {
     font-size: 14px; /* 好きなサイズに調整 */
-    margin: 0 0 5px 0; /* 上下の余白も調整可能 */
+    margin: 0 0 5px 8px; /* 上下の余白も調整可能 */
     font-weight: normal; /* 太さも変えたい場合 */
 }
 /* 閲覧履歴ラッパー */

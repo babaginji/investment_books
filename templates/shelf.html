@@ -8,84 +8,40 @@
 <body>
     <h1>{{ shelf_name }}</h1>
 
+    <!-- 棚の本 -->
     <div class="books-container" id="books-container">
-        <!-- JS が localStorage から本棚を描画 -->
+        {% for book in books %}
+        <div class="book">
+            <span class="star" onclick="addToMyShelf('{{ book.title|escape }}', '{{ book.author|escape }}', '{{ book.price }}', '{{ book.image|escape }}', '{{ book.itemUrl|escape }}')">★</span>
+            <a href="{{ book.itemUrl }}" target="_blank">
+                <img src="{{ book.image }}" alt="{{ book.title }}">
+            </a>
+            <h3>{{ book.title }}</h3>
+            <p>著者: {{ book.author }}</p>
+            <p>価格: ¥{{ book.price }}</p>
+        </div>
+        {% endfor %}
     </div>
 
     <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
 
     <script>
-    let myShelf = [];
-
     // -----------------------------
-    // localStorage から「私の本棚」をロード
+    // 星クリックで「私の本棚」に追加
     // -----------------------------
-    function loadShelfLocal() {
-        return JSON.parse(localStorage.getItem("myShelf") || "[]");
+    function addToMyShelf(title, author, price, image, itemUrl) {
+        const book = { title, author, price, image, itemUrl };
+        fetch('/add_to_my_shelf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(`「${title}」を私の本棚に追加しました`);
+        })
+        .catch(err => console.error(err));
     }
-
-    function saveShelfLocal() {
-        localStorage.setItem("myShelf", JSON.stringify(myShelf));
-    }
-
-    // -----------------------------
-    // 「私の本棚」を描画
-    // -----------------------------
-    function displayShelf() {
-        const container = document.getElementById('books-container');
-        container.innerHTML = '';
-
-        myShelf.forEach(book => {
-            const bookDiv = document.createElement('div');
-            bookDiv.className = 'book';
-
-            const star = document.createElement('span');
-            star.className = 'star';
-            star.textContent = '★';
-            star.style.cursor = 'pointer';
-
-            star.onclick = () => {
-                // 削除処理
-                myShelf = myShelf.filter(b => b.title !== book.title);
-                saveShelfLocal();
-                displayShelf();
-            };
-
-            const imgLink = document.createElement('a');
-            imgLink.href = book.itemUrl;
-            imgLink.target = '_blank';
-
-            const img = document.createElement('img');
-            img.src = book.image;
-            img.alt = book.title;
-            imgLink.appendChild(img);
-
-            const titleH3 = document.createElement('h3');
-            titleH3.textContent = book.title;
-
-            const authorP = document.createElement('p');
-            authorP.textContent = '著者: ' + book.author;
-
-            const priceP = document.createElement('p');
-            priceP.textContent = '価格: ¥' + book.price;
-
-            bookDiv.appendChild(star);
-            bookDiv.appendChild(imgLink);
-            bookDiv.appendChild(titleH3);
-            bookDiv.appendChild(authorP);
-            bookDiv.appendChild(priceP);
-
-            container.appendChild(bookDiv);
-        });
-    }
-
-    // -----------------------------
-    // 初期ロード
-    // -----------------------------
-    window.onload = () => {
-        myShelf = loadShelfLocal();
-        displayShelf();
-    };
     </script>
 </body>
 </html>
