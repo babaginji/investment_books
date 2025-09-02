@@ -13,7 +13,8 @@
         <input type="text" id="title" placeholder="本のタイトルを検索">
         <button onclick="searchBook()">検索</button>
     </div>
-
+    <div id="search-history-box" style="display:none; position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000;"></div>
+</div>
     <!-- 棚リンク（先頭に私の本棚を含む） -->
     <div class="shelf-links">
         <div class="shelf-link">
@@ -86,10 +87,6 @@
                 box.style.display = "none";
                 return;
             }
-        
-            const rect = input.getBoundingClientRect();
-            box.style.width = rect.width + "px";
-            box.style.left = rect.left + "px";
             box.style.display = "block";
             box.innerHTML = "";
         
