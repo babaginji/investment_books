@@ -304,46 +304,42 @@ h1 {
 /* 閲覧履歴リスト */
 #view-history {
     display: flex;
-    gap: 0;          /* 本同士の隙間を完全になくす */
+    gap: 10px;          /* 本同士の隙間（左右5pxずつ） */
     margin: 0;
     padding: 0;
 }
 
-/* 本カード */
+/* 本カード（ボックス化） */
 #view-history .book {
     flex: 0 0 auto;
-    width: 150px;          /* 検索結果200px → 少し小さめ */
-    margin: 0;
-    padding: 0;
+    width: 150px;          
+    padding: 5px;         /* 画像とボックスの間に余白 */
     text-align: center;
     background: #fff;
-    border: none;
-    line-height: 0;     /* 下の余白を消すために追加 */
+    border: 1px solid #ccc;   /* ボックス枠 */
+    border-radius: 4px;
+    box-sizing: border-box;   /* paddingを幅に含める */
+    line-height: 1;           /* 下の余白を調整 */
 }
 
 /* 表紙画像 */
 #view-history .book img {
-    display: block;        /* 画像下の余白を消す */
-    width: 100%;           /* カード幅いっぱいに */
-    height: auto;          /* 縦横比を維持 */
+    display: block;
+    width: 100%;     
+    height: auto;    
     border-radius: 4px;
     margin: 0;
     padding: 0;
 }
 
-/* 閲覧履歴ラッパーの高さを子要素にフィットさせる */
+/* 閲覧履歴ラッパーの高さを子要素にフィット */
 #view-history-wrapper {
-    display: flex;          /* ← ラッパー自体もflexにする */
-    align-items: flex-start; /* 子要素を上に揃える */
+    display: flex;
+    align-items: flex-start;
     height: auto;           
-    line-height: 0;         /* テキスト由来の余白をゼロに */
+    line-height: 0;         
 }
 
-/* 閲覧履歴の本カード */
-#view-history .book {
-    margin: 0 !important;   /* 他からの margin を完全に打ち消す */
-    padding: 0 !important;  /* 他からの padding も消す */
-}
 
 /* -----------------------------
    レスポンシブ（検索結果）
