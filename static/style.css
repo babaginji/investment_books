@@ -17,25 +17,33 @@ h1 {
 ----------------------------- */
 #search-panel {
     display: flex;
-    gap: 5px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 5px 0;   /* 上下余白を最小限に */
 }
 
-#search-panel input {
-    flex: 1 1 auto;
-    padding: 10px;
-    font-size: 16px;
-    min-width: 200px;
-    box-sizing: border-box;
+#search-panel input[type="text"] {
+    flex: 1;
+    max-width: 500px;
+    padding: 6px 10px;
+    font-size: 0.9em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
 }
 
 #search-panel button {
-    flex: 0 0 auto;
-    padding: 10px 15px;
-    font-size: 16px;
+    padding: 6px 12px;
+    font-size: 0.9em;
+    border: none;
+    border-radius: 6px;
+    background: #0077cc;
+    color: white;
     cursor: pointer;
+    transition: background 0.2s;
+}
+#search-panel button:hover {
+    background: #005fa3;
 }
 
 /* -----------------------------
@@ -102,31 +110,32 @@ h1 {
 
 /* 「私の本棚」専用リンク */
 .my-shelf-link {
-    margin: 15px 0;
+    margin: 10px 0 15px 0;
     text-align: center;
 }
 .my-shelf-link a {
     display: inline-block;
-    padding: 10px 20px;
-    font-size: 1.2em;
+    padding: 8px 18px;
+    font-size: 1.1em;
     font-weight: bold;
     color: #fff;
     background: #0077cc;
-    border-radius: 8px;
+    border-radius: 6px;
     text-decoration: none;
-    transition: background 0.2s;
+    transition: background 0.2s, transform 0.1s;
 }
 .my-shelf-link a:hover {
     background: #005fa3;
+    transform: scale(1.03);
 }
 
 /* その他の棚リンク（横スクロール式） */
 .shelf-links {
     display: flex;
     overflow-x: auto;
-    gap: 12px;
-    padding: 10px 0;
-    margin-bottom: 30px;
+    gap: 10px;
+    padding: 6px 0 12px;
+    margin: 0 0 20px 0;
     scroll-snap-type: x mandatory;  /* スクロール位置を揃える */
 }
 .shelf-links::-webkit-scrollbar {
@@ -142,21 +151,21 @@ h1 {
 }
 .shelf-link a {
     display: inline-block;
-    padding: 8px 14px;
-    font-size: 1em;
+    padding: 6px 12px;
+    font-size: 0.95em;
     color: #0077cc;
     border: 1px solid #0077cc;
     border-radius: 6px;
     background: #f9f9f9;
     text-decoration: none;
     white-space: nowrap;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s, color 0.2s, transform 0.1s;
 }
 .shelf-link a:hover {
     background: #e6f2ff;
     color: #005fa3;
+    transform: scale(1.05);
 }
-
 
 /* -----------------------------
    本棚内の本カードコンテナ
@@ -200,6 +209,11 @@ h1 {
     border-radius: 6px;
     text-align: center;
     position: relative;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.books-container .book:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .books-container .book img {
@@ -216,14 +230,21 @@ h1 {
 .books-container .book p {
     font-size: 12px;
     margin: 2px 0;
+    color: #444;
 }
 
+/* 星マーク */
 .books-container .book .star {
     font-size: 16px;
     position: absolute;
     top: 5px;
     left: 5px;
     cursor: pointer;
+    user-select: none;
+    transition: transform 0.1s;
+}
+.books-container .book .star:hover {
+    transform: scale(1.2);
 }
 
 /* -----------------------------

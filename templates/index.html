@@ -2,17 +2,31 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>投資本棚</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1></h1>
+    <h1>投資本棚</h1>
 
     <!-- 検索窓 -->
     <div id="search-panel">
         <input type="text" id="title" placeholder="本のタイトルを検索">
         <button onclick="searchBook()">検索</button>
+    </div>
+
+    <!-- 棚リンク（先頭に私の本棚を含む） -->
+    <div class="shelf-links">
+        <div class="shelf-link">
+            <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">私の本棚</a>
+        </div>
+        {% for shelf in shelves %}
+            {% if shelf != "私の本棚" %}
+            <div class="shelf-link">
+                <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">{{ shelf }}</a>
+            </div>
+            {% endif %}
+        {% endfor %}
     </div>
 
     <!-- 検索履歴ボックス -->
@@ -22,25 +36,6 @@
     <div id="search-results-wrapper">
         <div id="search-results" class="books-container"></div>
     </div>
-
-    <!-- 「私の本棚」リンク（特別枠） -->
-    <h2>私の本棚</h2>
-    <div class="my-shelf-link">
-        <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">私の本棚</a>
-    </div>
-
-    <!-- その他の棚リンク（横スクロールで選択） -->
-    <h2>棚リンク一覧</h2>
-    <div class="shelf-links">
-        {% for shelf in shelves %}
-            {% if shelf != "私の本棚" %}
-            <div class="shelf-link">
-                <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">{{ shelf }}</a>
-            </div>
-        {% endif %}
-    {% endfor %}
-</div>
-
     <script>
         let searchResults = [];
         let myShelf = [];
