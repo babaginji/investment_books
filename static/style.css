@@ -348,8 +348,30 @@ h2 {
     height: auto;           
     line-height: 0;         
 }
-
-
+/* -----------------------------
+   私の本棚内
+----------------------------- */
+/* タブ用スタイル */
+.tabs {
+    display: flex;
+    justify-content: center;   /* 中央揃え */
+    gap: 20px;                 /* タブ間の距離 */
+    margin-bottom: 15px;
+}
+.tab {
+    padding: 10px 20px;        /* 大きめに */
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f9f9f9;
+    font-size: 16px;           /* フォント大きく */
+    font-weight: bold;
+    transition: background 0.2s, color 0.2s;
+}
+.tab.active {
+    background: #0077cc;
+    color: #fff;
+}
 /* -----------------------------
    レスポンシブ（検索結果）
 ----------------------------- */
