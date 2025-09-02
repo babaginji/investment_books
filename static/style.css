@@ -371,24 +371,24 @@ h2 {
 .tab {
     padding: 30px 60px;        /* 上下15px、左右30pxに調整 */
     cursor: pointer;
-    border: 1px solid #0077cc; /* 枠を水色 */
+    border: 1px solid #fff; /* 枠を水色 */
     border-radius: 20px;       /* 丸くする */
-    background: #f9f9f9;       /* 背景は薄いグレー */
-    font-size: 50px;           /* 文字サイズ調整 */
+    background: #fff;       /* 背景は薄いグレー */
+    font-size: 25px;           /* 文字サイズ調整 */
     font-weight: bold;
-    color: #0077cc;            /* 文字を水色 */
+    color: #1c1c1c;            /* 文字を水色 */
     transition: background 0.2s, color 0.2s;
 }
 
 .tab.active {
-    background: #0077cc;       /* 選択中は水色背景 */
-    color: #fff;               /* 文字白 */
+    background: #fff;       /* 選択中は水色背景 */
+    color: #0077cc;               /* 文字白 */
 }
 
 /* タブの下に薄い灰色の線を引きたい場合 */
 .tabs-container {
-    border-bottom: 4px solid #e0e0e0;
-    padding-bottom: 5px;
+    border-bottom: 10px solid #e0e0e0;
+    padding-bottom: 10px;
 }
 
 /* -----------------------------
