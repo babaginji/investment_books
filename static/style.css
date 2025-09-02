@@ -171,7 +171,7 @@ h1 {
 ----------------------------- */
 .books-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 8px;
     padding: 8px;
     margin: 0;
@@ -364,17 +364,17 @@ h2 {
 .tabs {
     display: flex;
     justify-content: center;   /* 中央揃え */
-    gap: 20px;                 /* タブ間の距離 */
+    gap: 50px;                 /* タブ間の距離 */
     margin-bottom: 15px;
 }
 
 .tab {
-    padding: 15px 30px;        /* 上下15px、左右30pxに調整 */
+    padding: 30px 60px;        /* 上下15px、左右30pxに調整 */
     cursor: pointer;
     border: 1px solid #0077cc; /* 枠を水色 */
     border-radius: 20px;       /* 丸くする */
     background: #f9f9f9;       /* 背景は薄いグレー */
-    font-size: 20px;           /* 文字サイズ調整 */
+    font-size: 50px;           /* 文字サイズ調整 */
     font-weight: bold;
     color: #0077cc;            /* 文字を水色 */
     transition: background 0.2s, color 0.2s;
