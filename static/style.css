@@ -291,50 +291,39 @@ h1 {
 /* -----------------------------
    閲覧履歴の横スクロールリスト
 ----------------------------- */
+/* 閲覧履歴ラッパー */
 #view-history-wrapper {
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow-x: auto;     /* 横スクロール */
-    overflow-y: hidden;   /* 下に余白が出ないように */
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap; /* 横並びを強制 */
 }
 
-/* 履歴の本コンテナ */
+/* 閲覧履歴リスト */
 #view-history {
     display: flex;
-    gap: 0;               /* 本同士の余白ゼロ */
     margin: 0;
-    padding: 2px 0;       /* 上下の余白も最小限 */
-    scroll-behavior: smooth;
+    padding: 0;
 }
 
-/* 履歴の本カード */
+/* 本カード */
 #view-history .book {
     flex: 0 0 auto;
-    width: 140px;         /* 検索結果200pxの70% */
-    margin: 0;            /* 外側余白なし */
-    padding: 0;           /* 内側余白なし */
-    border: 1px solid #fff;
-    border-radius: 4px;
-    background-color: #fff;
+    margin: 0;          /* 外側余白なし */
+    padding: 0;         /* 内側余白なし */
+    width: auto;        /* 固定幅を解除して画像サイズに合わせる */
     text-align: center;
-    position: relative;
+    background: #fff;
 }
 
 /* 表紙画像 */
 #view-history .book img {
-    width: 100%;
-    display: block;       /* 画像下の隙間をなくす */
+    display: block;     /* 画像下の余白を削除 */
+    height: 150px;      /* 高さで揃える（検索結果より小さめ） */
+    width: auto;        /* 縦横比を維持 */
     border-radius: 4px;
-}
-
-/* 詳細テキストなど */
-#view-history .book-details {
-    font-size: 12px;
-    margin: 0;
-    padding: 2px;
-    text-align: left;
-    line-height: 1.2;
 }
 
 /* -----------------------------
