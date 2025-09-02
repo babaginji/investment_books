@@ -256,9 +256,11 @@
         window.onload = () => {
             myShelf = loadShelfLocal();
             updateMyShelfDisplay();
-        
+
             const input = document.getElementById("title");
-        
+            const historyBox = document.getElementById("search-history-box");
+
+            // 前回検索の復元
             const lastSearch = localStorage.getItem("lastSearch");
             if (lastSearch) {
                 const data = JSON.parse(lastSearch);
@@ -266,19 +268,26 @@
                 searchResults = data.books;
                 displaySearchResults();
             }
-        
+
+            // Enterで検索
             input.addEventListener("keydown", (e) => {
                 if (e.key === "Enter") searchBook();
             });
-        
+
+            // 履歴表示
             input.addEventListener("focus", () => displayHistory());
             input.addEventListener("input", () => displayHistory());
-            input.addEventListener("blur", () => setTimeout(() => {
-                document.getElementById("search-history-box").style.display = "none";
-            }, 200));
+
+            // 履歴ボックスクリックでは閉じない
+            historyBox.addEventListener("mousedown", (e) => e.preventDefault());
+
+            // documentクリックで履歴を閉じる
+            document.addEventListener("click", (e) => {
+                if (!input.contains(e.target) && !historyBox.contains(e.target)) {
+                    historyBox.style.display = "none";
+                }
+            });
         };
         </script>
-        
-        
 </body>
 </html>
