@@ -15,34 +15,31 @@
     <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
 
     <script>
-        const shelfName = "{{ shelf_name }}"; // Jinja2 で棚名を取得
+        const shelfName = "{{ shelf_name }}"; 
+        const shelfBooksFromServer = {{ books|tojson }};
         
-        // -----------------------------
-        // localStorage から「私の本棚」をロード
-        // -----------------------------
+        // localStorage から「私の本棚」を取得
         function loadMyShelf() {
             return JSON.parse(localStorage.getItem("myShelf") || "[]");
         }
-        
         function saveMyShelf(books) {
             localStorage.setItem("myShelf", JSON.stringify(books));
         }
         
-        // -----------------------------
-        // この棚の本はサーバーから渡された books を使用
-        // -----------------------------
-        const shelfBooks = {{ books|tojson }};
-        
-        // -----------------------------
-        // 本棚を描画
-        // -----------------------------
+        // 本棚描画
         function displayShelf() {
             const container = document.getElementById('books-container');
             container.innerHTML = '';
         
             const myShelf = loadMyShelf();
         
-            shelfBooks.forEach(book => {
+            // サーバー本＋私の本棚にある本（重複なし）をマージ
+            const allBooksMap = {};
+            shelfBooksFromServer.forEach(b => allBooksMap[b.title] = b);
+            myShelf.forEach(b => allBooksMap[b.title] = b);
+            const allBooks = Object.values(allBooksMap);
+        
+            allBooks.forEach(book => {
                 const bookDiv = document.createElement('div');
                 bookDiv.className = 'book';
         
@@ -50,8 +47,6 @@
                 star.className = 'star';
                 star.textContent = '★';
                 star.style.cursor = 'pointer';
-        
-                // ★の色をセット
                 star.style.color = myShelf.some(b => b.title === book.title) ? 'gold' : 'gray';
         
                 star.onclick = () => {
@@ -95,12 +90,7 @@
             });
         }
         
-        // -----------------------------
-        // 初期ロード
-        // -----------------------------
-        window.onload = () => {
-            displayShelf();
-        };
+        window.onload = displayShelf;
         </script>
         
 </body>
