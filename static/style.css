@@ -312,7 +312,7 @@ h1 {
 /* 本カード（ボックス化） */
 #view-history .book {
     flex: 0 0 auto;
-    width: 150px;          
+    width: 100px;          
     padding: 5px;         /* 画像とボックスの間に余白 */
     text-align: center;
     background: #fff;
