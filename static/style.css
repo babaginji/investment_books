@@ -108,11 +108,12 @@ h1 {
    トップページ: 棚リンク一覧
 ----------------------------- */
 .my-shelf-link {
-    margin: 10px 0 15px 12px; /* 左端に少しマージン */
+    margin: 5px 0 5px 0; 
     text-align: center;
 }
 .my-shelf-link a {
     display: inline-block;
+    margin-left: 12px; /* ←左マージンをリンク自体に設定 */
     padding: 8px 18px;
     font-size: 1.1em;
     font-weight: bold;
