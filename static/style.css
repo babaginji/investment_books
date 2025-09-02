@@ -295,8 +295,8 @@ h1 {
 #view-history {
     display: flex;           /* 横並び */
     overflow-x: auto;        /* 横スクロール */
-    padding: 8px 0;
-    gap: 8px;                /* 本同士の間隔 */
+    padding: 0 0;
+    gap: 0px;                /* 本同士の間隔 */
 }
 
 /* 閲覧履歴の本 */
