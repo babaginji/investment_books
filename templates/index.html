@@ -201,21 +201,31 @@
                     star.className = "star";
                     star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
                     star.style.cursor = "pointer";
+
                     star.onclick = () => {
-                        const index = myShelf.findIndex(b => b.title === book.title);
-                        if (index === -1) {
-                            myShelf.push(book);
-                        } else {
-                            myShelf.splice(index, 1);
-                        }
-                        saveShelfLocal();
-                        updateMyShelfDisplay();
-                        displaySearchResults();
+                        const bookData = {
+                            title: book.title,
+                            author: book.author,
+                            price: book.price,
+                            image: book.image,
+                            itemUrl: book.itemUrl
+                        };
+
+                        fetch('/add_to_my_shelf', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ book: bookData })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            star.textContent = '★'; // UI 上で塗りつぶす
+                            // 必要なら myShelf を更新して UI 再描画
+                            myShelf = data.my_shelf;
+                            updateMyShelfDisplay();
+                        })
+                        .catch(err => console.error(err));
                     };
-        
-                    const imgLink = document.createElement("a");
-                    imgLink.href = book.itemUrl;
-                    imgLink.target = "_blank";
+
         
                     // クリックで閲覧履歴に追加
                     imgLink.onclick = () => addToViewHistory(book);
