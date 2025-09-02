@@ -295,8 +295,8 @@ h1 {
 .book-details {
     display: none;        
     text-align: left;
-    font-size: 14px;
-    margin-top: 5px;
+    font-size: 7px;
+    margin-top: 3px;
 }
 .book .toggle-btn {
     display: block;
@@ -382,12 +382,12 @@ h2 {
 }
 
 .tab {
-    padding: 30px 60px;        /* 上下15px、左右30pxに調整 */
+    padding: 15px 30px;        /* 上下15px、左右30pxに調整 */
     cursor: pointer;
     border: 1px solid #fff; /* 枠を水色 */
     border-radius: 20px;       /* 丸くする */
     background: #fff;       /* 背景は薄いグレー */
-    font-size: 35px;           /* 文字サイズ調整 */
+    font-size: 17px;           /* 文字サイズ調整 */
     font-weight: bold;
     color: #1c1c1c;            /* 文字を水色 */
     transition: background 0.2s, color 0.2s;

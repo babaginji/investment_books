@@ -87,7 +87,7 @@
 
             // 既読ボタン
             const readBtn = document.createElement('button');
-            readBtn.textContent = book.read ? '未読に戻す' : '既読にする';
+            readBtn.textContent = book.read ? '既読' : '未読';
             readBtn.style.fontSize = '9px';
             readBtn.onclick = () => {
                 book.read = !book.read;
@@ -156,7 +156,7 @@
             pageInput.placeholder = 'ページ数';
             pageInput.style.width = '100%';
             pageInput.style.marginBottom = '10px';
-            pageInput.style.fontSize = '9px';
+            pageInput.style.fontSize = '13px';
             pageInput.style.padding = '4px';
             memoModal.appendChild(pageInput);
 
@@ -164,14 +164,14 @@
             memoTextarea.placeholder = 'メモを書く';
             memoTextarea.style.width = '100%';
             memoTextarea.style.height = '150px';
-            memoTextarea.style.fontSize = '8px';
+            memoTextarea.style.fontSize = '13px';
             memoTextarea.style.padding = '4px';
             memoModal.appendChild(memoTextarea);
 
             const saveMemoBtn = document.createElement('button');
             saveMemoBtn.textContent = '保存';
             saveMemoBtn.style.marginTop = '10px';
-            saveMemoBtn.style.fontSize = '9px';
+            saveMemoBtn.style.fontSize = '13px';
             saveMemoBtn.onclick = () => {
                 book.page = pageInput.value;
                 book.memo = memoTextarea.value;
@@ -185,7 +185,7 @@
             const cancelMemoBtn = document.createElement('button');
             cancelMemoBtn.textContent = 'キャンセル';
             cancelMemoBtn.style.marginLeft = '10px';
-            cancelMemoBtn.style.fontSize = '9px';
+            cancelMemoBtn.style.fontSize = '13px';
             cancelMemoBtn.onclick = () => {
                 memoModal.style.display = 'none';
             };
