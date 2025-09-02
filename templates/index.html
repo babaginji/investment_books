@@ -8,35 +8,35 @@
 
 </head>
 <body>
-    <!-- 検索窓 -->
-    <div id="search-panel">
-        <input type="text" id="title" placeholder="本のタイトルを検索">
-        <button onclick="searchBook()">検索</button>
-    </div>
-    <div id="search-history-box" style="display:none; position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000;"></div>
-</div>
-    <!-- 棚リンク（先頭に私の本棚を含む） -->
-    <div class="shelf-links">
-        <div class="shelf-link">
-            <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">私の本棚</a>
-        </div>
-        {% for shelf in shelves %}
-            {% if shelf != "私の本棚" %}
-            <div class="shelf-link">
-                <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">{{ shelf }}</a>
+    <!-- 検索窓 + 履歴ボックスをまとめてラップ -->
+        <div id="search-wrapper" style="position: relative;">
+            <div id="search-panel">
+                <input type="text" id="title" placeholder="本のタイトルを検索">
+                <button onclick="searchBook()">検索</button>
             </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-    
+            <!-- 検索履歴ボックスはここ -->
+            <div id="search-history-box" style="display:none; position: absolute; top: 100%; left: 0; width: 100%; z-index: 1000;"></div>
+        </div>
 
-    <!-- 検索履歴ボックス -->
-    <div id="search-history-box" style="display:none;"></div>
+        <!-- 棚リンク -->
+        <div class="shelf-links">
+            <div class="shelf-link">
+                <a href="{{ url_for('shelf_page', shelf_name='私の本棚') }}">私の本棚</a>
+            </div>
+            {% for shelf in shelves %}
+                {% if shelf != "私の本棚" %}
+                <div class="shelf-link">
+                    <a href="{{ url_for('shelf_page', shelf_name=shelf) }}">{{ shelf }}</a>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
 
-    <!-- 検索結果表示（端いっぱいに広げる） -->
-    <div id="search-results-wrapper">
-        <div id="search-results" class="books-container"></div>
-    </div>
+        <!-- 検索結果表示（端いっぱいに広げる） -->
+        <div id="search-results-wrapper">
+            <div id="search-results" class="books-container"></div>
+        </div>
+
     <script>
         let searchResults = [];
         let myShelf = [];
