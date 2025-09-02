@@ -296,7 +296,7 @@ h1 {
     display: flex;           /* 横並び */
     overflow-x: auto;        /* 横スクロール */
     padding: 0 0;
-    gap: 0px;                /* 本同士の間隔 */
+    gap: 0;                /* 本同士の間隔 */
 }
 
 /* 閲覧履歴の本 */
