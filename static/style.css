@@ -333,7 +333,94 @@ h1 {
     color: #000;
 }
 
+/* -----------------------------
+   図書館一覧
+----------------------------- */
 
+/* 上段：見出し + リーカルリンク */
+.library-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.library-header h2 {
+    writing-mode: horizontal-tb;  /* 横書きに固定 */
+    display: inline-block;
+    margin: 0 0 0 8px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #333;
+}
+
+/* リーカルリンク（上段） */
+.library-link {
+    display: inline-block;
+    padding: 3px 6px;
+    font-size: 0.7em;
+    color: #0077cc;              /* 通常文字色 */
+    border: 1px solid #0077cc;
+    border-radius: 12px;
+    background: #f9f9f9;
+    text-decoration: none;       /* 下線消す */
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+.library-link:hover {
+    background: #e6f2ff;
+    color: #e0e0e0;               /* ホバー時の文字色 */
+    transform: scale(1.05);
+}
+
+/* 下段：図書館リンク横スクロールラッパー */
+#nearby-libraries {
+    display: flex;
+    overflow-x: auto;
+    gap: 3px;
+    padding: 0;        /* 左右の隙間調整 */
+    scroll-snap-type: x mandatory;
+    border-bottom: 10px solid #e0e0e0;
+    margin-bottom: 6px;
+}
+
+#nearby-libraries::-webkit-scrollbar {
+    height: 6px;
+}
+#nearby-libraries::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 3px;
+}
+
+/* 図書館リンク個別アイテム */
+#library-results .library-item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+}
+/* 図書館リンク（灰色基調） */
+.library-item-link,
+.library-item-link:link,
+.library-item-link:visited {
+    display: inline-block;
+    padding: 3px 6px;
+    font-size: 0.7em;
+    color: #888 !important;       /* ← 完全に灰色に固定 */
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background: #f0f0f0;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+/* hover時だけ青基調 */
+.library-item-link:hover {
+    background: #e6f2ff;
+    color: #0077cc !important;
+    border-color: #0077cc;
+    transform: scale(1.05);
+}
 
 /* -----------------------------
    閲覧履歴の横スクロールリスト
@@ -459,3 +546,18 @@ h2 {
 }
 
 
+/* 横スクロールのスクロールバーを非表示にする共通スタイル */
+#nearby-libraries,
+#search-results,
+.shelf-links,
+#view-history {
+    -ms-overflow-style: none;  /* IE, Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+#nearby-libraries::-webkit-scrollbar,
+#search-results::-webkit-scrollbar,
+.shelf-links::-webkit-scrollbar,
+#view-history::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari */
+}

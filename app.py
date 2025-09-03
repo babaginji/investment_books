@@ -3,6 +3,7 @@ import requests
 import json
 import os
 from urllib.parse import unquote
+from math import radians, sin, cos, sqrt, atan2
 
 app = Flask(__name__)
 
@@ -76,38 +77,35 @@ def find_nearby_libraries(lat, lon):
     url = "https://api.calil.jp/library"
     params = {
         "appkey": CALIL_APP_KEY,
-        "geocode": f"{lon},{lat}",  # カーリルは「経度,緯度」の順
-        "format": "json",
-    }
-    response = requests.get(url, params=params)
-    libraries = response.json()
-
-    # 緯度経度を追加
-    for lib in libraries:
-        lib["lat"] = lib.get("lat")
-        lib["lon"] = lib.get("lon")
-
-    return libraries[:5]  # 上位5館
-
-
-# -----------------------------
-# カーリルAPI - 所蔵確認
-# -----------------------------
-def check_calil_availability(isbn, systemid):
-    url = "https://api.calil.jp/check"
-    params = {
-        "appkey": CALIL_APP_KEY,
-        "isbn": isbn,
-        "systemid": systemid,
+        "geocode": f"{lon},{lat}",  # 経度,緯度
         "format": "json",
         "callback": "",
     }
     response = requests.get(url, params=params)
-    return response.json()
+    try:
+        libraries = response.json()
+    except json.JSONDecodeError:
+        libraries = []
+    return libraries[:5]
 
 
 # -----------------------------
-# 本検索API
+# 距離計算
+# -----------------------------
+def calc_distance(lat1, lon1, lat2, lon2):
+    R = 6371
+    dlat = radians(lat2 - lat1)
+    dlon = radians(lon2 - lon1)
+    a = (
+        sin(dlat / 2) ** 2
+        + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
+    )
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    return R * c
+
+
+# -----------------------------
+# 本検索API（改良版）
 # -----------------------------
 @app.route("/search")
 def search_books():
@@ -118,7 +116,7 @@ def search_books():
     if not title:
         return jsonify([])
 
-    # 1. 楽天ブックス検索
+    # 1. 楽天
     url = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404"
     params = {
         "applicationId": RAKUTEN_APP_ID,
@@ -139,57 +137,44 @@ def search_books():
                 "isbn": book_item.get("isbn", ""),
                 "price": book_item.get("itemPrice", 0),
                 "image": book_item.get("largeImageUrl", ""),
-                "description": book_item.get("itemCaption", ""),
                 "itemUrl": book_item.get("itemUrl", ""),
+                "libraries": [],
             }
         )
 
-    # 2. 楽天になければ Open Library
+    # 2. Open Library
     if not books:
         books = search_openlibrary(title)
+        for b in books:
+            b["libraries"] = []
 
-    # 3. 図書館情報取得（現在地がある場合）
+    # 3. 図書館情報
     if lat and lon:
         user_lat, user_lon = float(lat), float(lon)
         libraries = find_nearby_libraries(user_lat, user_lon)
 
-        # 距離計算用関数
-        def calc_distance(lat1, lon1, lat2, lon2):
-            from math import radians, sin, cos, sqrt, atan2
-
-            R = 6371  # km
-            dlat = radians(lat2 - lat1)
-            dlon = radians(lon2 - lon1)
-            a = (
-                sin(dlat / 2) ** 2
-                + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
-            )
-            c = 2 * atan2(sqrt(a), sqrt(1 - a))
-            return R * c
-
         for book in books:
             isbn = book.get("isbn")
-            if isbn:
-                book["libraries"] = []
-                for lib in libraries:
-                    availability = check_calil_availability(isbn, lib["systemid"])
-                    stock = 0
-                    if availability.get(isbn):
-                        for sid, status in availability[isbn].items():
-                            if status == "OK":
-                                stock += 1
-                    distance = calc_distance(
-                        user_lat, user_lon, float(lib.get("lat")), float(lib.get("lon"))
+            book["libraries"] = []
+            for lib in libraries:
+                # 緯度経度を追加
+                try:
+                    lib_lat, lib_lon = map(
+                        float, lib.get("geocode", "0,0").split(",")[::-1]
                     )
-                    book["libraries"].append(
-                        {
-                            "name": lib.get("formal"),
-                            "distance": distance,
-                            "stock": stock,
-                        }
-                    )
-            # 距離順にソート
-            book["libraries"].sort(key=lambda x: x["distance"])
+                except:
+                    lib_lat, lib_lon = None, None
+
+                book["libraries"].append(
+                    {
+                        "name": lib.get("formal"),
+                        "lat": lib_lat,
+                        "lon": lib_lon,
+                        "url": f"https://calil.jp/library/{lib.get('systemid')}",  # リーカル公式リンク
+                        "distance": None,  # JS 側で計算
+                    }
+                )
+
     return jsonify(books)
 
 
@@ -209,15 +194,12 @@ def add_to_my_shelf():
     book = request.get_json().get("book")
     if not book:
         return jsonify({"error": "bookが指定されていません"}), 400
-
     shelves = load_shelves()
     if "私の本棚" not in shelves:
         shelves["私の本棚"] = []
-
     if not any(b["title"] == book["title"] for b in shelves["私の本棚"]):
         shelves["私の本棚"].append(book)
         save_shelves(shelves)
-
     return jsonify({"my_shelf": shelves["私の本棚"]})
 
 
@@ -226,7 +208,6 @@ def remove_from_my_shelf():
     title = request.get_json().get("title")
     if not title:
         return jsonify({"error": "titleが指定されていません"}), 400
-
     shelves = load_shelves()
     shelves["私の本棚"] = [b for b in shelves.get("私の本棚", []) if b["title"] != title]
     save_shelves(shelves)

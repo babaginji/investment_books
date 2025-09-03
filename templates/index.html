@@ -36,6 +36,20 @@
         <div id="search-results-wrapper">
             <div id="search-results" class="books-container"></div>
         </div>
+        <div class="library-section">
+            <!-- 上段：見出し + リーカルリンク -->
+        <div id="nearby-libraries-wrapper">
+            <div class="library-header">
+                <h2>近くの図書館</h2>
+                <a href="https://calil.jp/" target="_blank" class="library-link">リーカル検索</a>
+            </div>
+        </div>
+            <!-- 下段：図書館リンク -->
+            <div id="library-results" class="library-links-container"></div>
+        </div>
+        
+        
+        
         <h2>閲覧履歴</h2>
         <div id="view-history-wrapper">
             <div id="view-history">
@@ -188,10 +202,99 @@
                 };
             }
         
-            // -----------------------------
-// 周辺図書館情報取得
+            
 // -----------------------------
-// 緯度経度から距離（km）を計算する関数
+// 図書館情報取得（検索結果下に横スクロールでまとめて表示）
+// -----------------------------
+async function fetchNearbyLibraries(title) {
+    const containerDiv = document.getElementById("library-results");
+    if (!navigator.geolocation) {
+        containerDiv.innerHTML = "<p>位置情報を取得できません。</p>";
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(async (position) => {
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        try {
+            const res = await fetch(`/search?title=${encodeURIComponent(title)}&lat=${userLat}&lon=${userLon}`);
+            const books = await res.json();
+            if (!books || books.length === 0) {
+                containerDiv.innerHTML = "<p>本が見つかりません。</p>";
+                return;
+            }
+
+            // 図書館を重複させずにまとめる
+            const libMap = {};
+            books.forEach(book => {
+                if (book.libraries && book.libraries.length > 0) {
+                    book.libraries.forEach(lib => {
+                        if (!lib.name) return;
+                        if (!libMap[lib.name]) {
+                            if (lib.lat && lib.lon) {
+                                lib.distance = getDistance(userLat, userLon, lib.lat, lib.lon);
+                            } else {
+                                lib.distance = Infinity;
+                            }
+                            libMap[lib.name] = lib;
+                        }
+                    });
+                }
+            });
+
+            const libraries = Object.values(libMap);
+            if (libraries.length === 0) {
+                containerDiv.innerHTML = "<p>近くの図書館情報がありません。</p>";
+                return;
+            }
+
+            // 距離順にソート
+            libraries.sort((a, b) => a.distance - b.distance);
+
+            // 横スクロール用ラッパー
+            const wrapperDiv = document.createElement("div");
+            wrapperDiv.className = "shelf-links"; // 横スクロール親
+            wrapperDiv.style.display = "flex";     // ←これで横並び
+            wrapperDiv.style.overflowX = "auto";
+            wrapperDiv.style.gap = "10px";         // アイテム間隔
+            containerDiv.innerHTML = "";
+            containerDiv.appendChild(wrapperDiv);
+
+            libraries.forEach(lib => {
+                const libDiv = document.createElement("div");
+                libDiv.className = "shelf-link";
+                libDiv.style.flex = "0 0 auto"; // ←これで横スクロール内で縦にならない
+
+                const mapUrl = (lib.lat && lib.lon)
+                    ? `https://www.google.com/maps/search/?api=1&query=${lib.lat},${lib.lon}`
+                    : "#";
+
+                let displayName = lib.name;
+                if (!displayName.includes("図書館")) {
+                    displayName += "図書館";
+                }
+
+                libDiv.innerHTML = `
+                    📚 <a href="${mapUrl}" target="_blank" class="library-item-link">${displayName}</a>
+                    (${lib.distance !== Infinity ? lib.distance.toFixed(1) + " km" : "-"})
+                `;
+                wrapperDiv.appendChild(libDiv);
+            });
+
+        } catch (err) {
+            console.error(err);
+            containerDiv.innerHTML = "<p>図書館情報の取得に失敗しました。</p>";
+        }
+
+    }, (err) => {
+        containerDiv.innerHTML = "<p>位置情報の取得に失敗しました。</p>";
+    });
+}
+
+// -----------------------------
+// 距離計算関数（km単位）
+// -----------------------------
 function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // 地球半径 km
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -203,62 +306,6 @@ function getDistance(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     return R * c;
 }
-
-async function fetchLibraryInfo(bookTitle, containerDiv) {
-    if (!navigator.geolocation) {
-        containerDiv.innerHTML = "<p>位置情報を取得できません。</p>";
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(async (position) => {
-        const userLat = position.coords.latitude;
-        const userLon = position.coords.longitude;
-
-        try {
-            const res = await fetch(`/search?title=${encodeURIComponent(bookTitle)}&lat=${userLat}&lon=${userLon}`);
-            const books = await res.json();
-
-            const book = books.find(b => b.title === bookTitle);
-            if (!book || !book.libraries || book.libraries.length === 0) {
-                containerDiv.innerHTML = "<p>近くの図書館で在庫が見つかりませんでした。</p>";
-                return;
-            }
-
-            // 各図書館に距離を追加
-            book.libraries.forEach(lib => {
-                if (lib.lat && lib.lon) {
-                    lib.distance = getDistance(userLat, userLon, lib.lat, lib.lon);
-                } else {
-                    lib.distance = Infinity; // 位置不明なら遠い扱い
-                }
-            });
-
-            // 距離順にソート
-            book.libraries.sort((a, b) => a.distance - b.distance);
-
-            containerDiv.innerHTML = "";
-            book.libraries.forEach(lib => {
-                // 在庫情報を簡単に判定
-                let stock = "不明";
-                if (lib.status) {
-                    const libkeys = Object.values(lib.status);
-                    const hasStock = libkeys.some(k => Object.values(k).some(v => v !== "0"));
-                    stock = hasStock ? "あり" : "なし";
-                }
-                const div = document.createElement("div");
-                div.className = "library-item";
-                div.innerHTML = `<p>📚 ${lib.name} (${lib.distance !== Infinity ? lib.distance.toFixed(1) + " km" : "-"})</p><p>在庫: ${stock}</p>`;
-                containerDiv.appendChild(div);
-            });
-        } catch (err) {
-            console.error(err);
-            containerDiv.innerHTML = "<p>図書館情報の取得に失敗しました。</p>";
-        }
-    }, (err) => {
-        containerDiv.innerHTML = "<p>位置情報の取得に失敗しました。</p>";
-    });
-}
-
 
 // -----------------------------
 // 検索結果表示
@@ -308,27 +355,13 @@ function displaySearchResults() {
         detailsDiv.innerHTML = `<p>価格: ${book.price}</p><p>著者: ${book.author}</p>`;
         bookDiv.appendChild(detailsDiv);
 
-        // 図書館情報用 div
-        const libraryDiv = document.createElement("div");
-        libraryDiv.className = "library-info";
-        bookDiv.appendChild(libraryDiv);
-
-        const toggleBtn = document.createElement("span");
-        toggleBtn.className = "toggle-btn";
-        toggleBtn.textContent = "詳細を見る";
-        toggleBtn.onclick = () => {
-            const isHidden = !detailsDiv.classList.contains("show");
-
-            detailsDiv.classList.toggle("show", isHidden);
-            libraryDiv.classList.toggle("show", isHidden);
-            toggleBtn.textContent = isHidden ? "詳細を隠す" : "詳細を見る";
-
-            if (isHidden) fetchLibraryInfo(book.title, libraryDiv);
-        };
-
-        bookDiv.appendChild(toggleBtn);
         resultsDiv.appendChild(bookDiv);
     });
+
+    // 検索結果下にまとめて図書館情報表示
+    if (searchResults.length > 0) {
+        fetchNearbyLibraries(searchResults[0].title);
+    }
 }
 
             // -----------------------------
