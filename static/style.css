@@ -572,17 +572,19 @@ h2 {
 
 
 #recommend-books {
-    width: 100%;          /* 画面幅いっぱいに */
-    overflow-x: auto;     /* 横スクロールを有効に */
+    width: 100%;          /* 親は画面幅いっぱい */
+    overflow-x: auto;     /* 横スクロール */
+    -webkit-overflow-scrolling: touch; /* スマホ慣性スクロール */
 }
 
-#recommend-books > div { /* wrapper */
+#recommend-books > div {
     display: flex;
     gap: 10px;
+    min-width: max-content;  /* ←これがポイント！ */
 }
 
 #recommend-books .book {
-    flex: 0 0 auto;       /* 横スクロールで縦にならない */
-    width: 150px;         /* 表示したい幅に固定 */
+    flex: 0 0 auto;
+    width: 150px;      /* 好きな幅に固定 */
     text-align: center;
 }
