@@ -202,7 +202,7 @@ async function fetchLibraryInfo(bookTitle, containerDiv) {
         const lon = position.coords.longitude;
 
         try {
-            const res = await fetch(`/library?title=${encodeURIComponent(bookTitle)}&lat=${lat}&lon=${lon}`);
+            const res = await fetch(`/search?title=${encodeURIComponent(bookTitle)}&lat=${lat}&lon=${lon}`);
             const libraries = await res.json();
 
             if (!libraries || libraries.length === 0) {
