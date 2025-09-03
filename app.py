@@ -65,6 +65,7 @@ def search_openlibrary(title):
                 if doc.get("cover_i")
                 else "",
                 "url": f"https://openlibrary.org{doc.get('key')}",
+                "tags": " ".join(doc.get("subject", [])) if doc.get("subject") else "",
             }
         )
     return books
@@ -90,22 +91,7 @@ def find_nearby_libraries(lat, lon):
 
 
 # -----------------------------
-# 距離計算
-# -----------------------------
-def calc_distance(lat1, lon1, lat2, lon2):
-    R = 6371
-    dlat = radians(lat2 - lat1)
-    dlon = radians(lon2 - lon1)
-    a = (
-        sin(dlat / 2) ** 2
-        + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
-    )
-    c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    return R * c
-
-
-# -----------------------------
-# 本検索API（改良版）
+# 本検索API（楽天+OpenLibrary+図書館）
 # -----------------------------
 @app.route("/search")
 def search_books():
@@ -116,7 +102,9 @@ def search_books():
     if not title:
         return jsonify([])
 
-    # 1. 楽天
+    books = []
+
+    # 楽天
     url = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404"
     params = {
         "applicationId": RAKUTEN_APP_ID,
@@ -126,8 +114,6 @@ def search_books():
     }
     response = requests.get(url, params=params)
     data = response.json()
-
-    books = []
     for item in data.get("Items", []):
         book_item = item["Item"]
         books.append(
@@ -138,40 +124,38 @@ def search_books():
                 "price": book_item.get("itemPrice", 0),
                 "image": book_item.get("largeImageUrl", ""),
                 "itemUrl": book_item.get("itemUrl", ""),
+                "tags": "",  # 楽天にはタグなし
                 "libraries": [],
             }
         )
 
-    # 2. Open Library
+    # Open Library 補完
     if not books:
         books = search_openlibrary(title)
         for b in books:
             b["libraries"] = []
 
-    # 3. 図書館情報
+    # 図書館情報
     if lat and lon:
         user_lat, user_lon = float(lat), float(lon)
         libraries = find_nearby_libraries(user_lat, user_lon)
-
         for book in books:
             isbn = book.get("isbn")
             book["libraries"] = []
             for lib in libraries:
-                # 緯度経度を追加
                 try:
                     lib_lat, lib_lon = map(
                         float, lib.get("geocode", "0,0").split(",")[::-1]
                     )
                 except:
                     lib_lat, lib_lon = None, None
-
                 book["libraries"].append(
                     {
                         "name": lib.get("formal"),
                         "lat": lib_lat,
                         "lon": lib_lon,
-                        "url": f"https://calil.jp/library/{lib.get('systemid')}",  # リーカル公式リンク
-                        "distance": None,  # JS 側で計算
+                        "url": f"https://calil.jp/library/{lib.get('systemid')}",
+                        "distance": None,
                     }
                 )
 
@@ -229,6 +213,33 @@ def shelf_page(shelf_name):
     return render_template(
         "shelf.html", shelf_name=shelf_name, books=books, my_shelf=my_shelf_books
     )
+
+
+# -----------------------------
+# おすすめ機能
+# -----------------------------
+@app.route("/recommend")
+def recommend_books():
+    # 閲覧履歴を受け取る（JSON形式）
+    history_json = request.args.get("history", "[]")
+    history = json.loads(history_json)
+
+    # 最初は閲覧履歴に基づく簡易推薦
+    recommended = []
+
+    all_books = []  # ここに全本データを入れられるように拡張可能
+    # 例として同じ著者・タグで簡単にマッチ
+    for h in history:
+        for b in all_books:
+            if b["title"] not in [x["title"] for x in history + recommended]:
+                if (
+                    h.get("tags")
+                    and b.get("tags")
+                    and any(tag in h["tags"].split() for tag in b["tags"].split())
+                ):
+                    recommended.append(b)
+
+    return jsonify(recommended[:10])  # 最大10件
 
 
 # -----------------------------

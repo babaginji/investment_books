@@ -56,6 +56,10 @@
             <!-- .book が並ぶ -->
             </div>
         </div>
+        <h2>あなたにおすすめ</h2>
+        <div id="recommend-books" class="books-container"></div>
+        
+            
         <script>
             // -----------------------------
             // グローバル変数
@@ -318,6 +322,11 @@ function displaySearchResults() {
     searchResults.forEach(rawBook => {
         const book = normalizeBook(rawBook);
 
+        // 新しい本なら window.allBooks に追加
+        if (!window.allBooks.find(b => b.title === book.title)) {
+            window.allBooks.push(book);
+        }
+
         const bookDiv = document.createElement("div");
         bookDiv.className = "book";
         bookDiv.style.display = "flex";
@@ -352,33 +361,72 @@ function displaySearchResults() {
 
         const detailsDiv = document.createElement("div");
         detailsDiv.className = "book-details";
-        detailsDiv.innerHTML = `<p>価格: ${book.price}</p><p>著者: ${book.author}</p>`;
+        detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
         bookDiv.appendChild(detailsDiv);
-        // ここでトグルボタンを追加
-const toggleBtn = document.createElement("span");
-toggleBtn.className = "toggle-btn";
-toggleBtn.style.cursor = "pointer";
-toggleBtn.style.color = "#007bff";
-toggleBtn.style.marginTop = "4px";
-toggleBtn.textContent = "詳細を表示";
-
-toggleBtn.onclick = () => {
-    if (detailsDiv.classList.toggle("show")) {
-        toggleBtn.textContent = "詳細を隠す";
-    } else {
-        toggleBtn.textContent = "詳細を表示";
-    }
-};
-bookDiv.appendChild(toggleBtn);
 
         resultsDiv.appendChild(bookDiv);
     });
 
-    // 検索結果下にまとめて図書館情報表示
-    if (searchResults.length > 0) {
-        fetchNearbyLibraries(searchResults[0].title);
-    }
+    // 閲覧履歴に基づくおすすめを更新
+    displayRecommendedBooksByKeywords();
+
+    // 検索結果下に図書館情報を表示
+    if (searchResults.length > 0) fetchNearbyLibraries(searchResults[0].title);
 }
+
+// -----------------------------
+// あなたにおすすめ（タイトルと著者でキーワードマッチ）
+// -----------------------------
+function displayViewHistory() {
+    const historyDiv = document.getElementById("view-history");
+    if (!historyDiv) return;
+    historyDiv.innerHTML = "";
+
+    const history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+    if (history.length === 0) return;
+
+    // 横スクロール用ラッパー
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.overflowX = "auto";
+    wrapper.style.gap = "10px"; // 本同士の間隔
+
+    history.forEach(book => {
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+        bookDiv.style.flex = "0 0 auto"; // 横並びで縦に広がらない
+        bookDiv.style.display = "flex";
+        bookDiv.style.flexDirection = "column";
+        bookDiv.style.alignItems = "center";
+
+        const imgLink = document.createElement("a");
+        imgLink.href = book.itemUrl;
+        imgLink.target = "_blank";
+
+        const img = document.createElement("img");
+        img.src = book.image;
+        img.alt = book.title;
+        imgLink.appendChild(img);
+        bookDiv.appendChild(imgLink);
+
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "book-details";
+        detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
+        bookDiv.appendChild(detailsDiv);
+
+        wrapper.appendChild(bookDiv);
+    });
+
+    historyDiv.appendChild(wrapper);
+}
+
+// -----------------------------
+// ページ読み込み時
+// -----------------------------
+window.addEventListener("DOMContentLoaded", () => {
+    displayViewHistory();
+    displayRecommendedBooksByKeywords();
+});
 
             // -----------------------------
             // 閲覧履歴機能
@@ -442,7 +490,8 @@ bookDiv.appendChild(toggleBtn);
                 localStorage.setItem("lastSearch", JSON.stringify({ title, books }));
                 displaySearchResults();
             }
-        
+
+
             // -----------------------------
             // 初期ロード
             // -----------------------------
@@ -479,6 +528,146 @@ bookDiv.appendChild(toggleBtn);
                 displayViewHistory();
             };
         </script>
-        
+        <script>
+            window.allBooks = [{
+      "author": "清原 達郎",
+      "description": "■話題沸騰　連続重版たちまち24万部突破！\n個人資産800億円超。長者番付1位となった伝説のサラリーマン投資家・清原達郎。\n咽頭がんで声帯を失い、引退を決めたいま、全人生で得た株式投資のノウハウを明かす\n■新NISA完全対応！　すべての投資家のバイブル誕生\n私には後継者がいない。ならばすべてのノウハウを全部世の中に「ぶちまけてしまえ」という気持ちになった。今や株式市場は「個人が自由に儲けることができる市場」です。2024年からは新NISAも始まりました。「やらなきゃ絶対損」という個人にとっては夢のような制度です。（本書より）\n■株式投資に才能など存在しない。「自分の失敗からどれだけ学んだか」だけだ。\n\n《目次》\n■第1章　市場はあなたを見捨てない\n　間違っても損をするとは限らない　正しかったら儲かるとは限らない／投資のアイデア=株価に織り込まれていないアイデア／すべての情報にはバイアスがかかっている／情報収集に金をかける必要はなし／投資家は相場に勝てるのか／パッシブ運用vs.アクティブ運用　ほか\n■第2章　ヘッジファンドへの長い道のり\n　野村證券入社──抱いた「強烈な違和感」／損をする個人投資家のパターン／北尾吉孝氏に救われる／軍曹／「腐れ玉」の行方／「ロング・ショート運用」の夜明け　ほか\n■第3章　「割安小型成長株」の破壊力\n　実は役に立たない「PBR」／キャッシュニュートラルPERの問題点／「1段階モデル」は低PER株に有効／金利が上がると、高PER株は不利？／「イメージの悪い業界」こそチャンス／バリュエーションの梯子を上る／資金100万円で「割安小型成長株」投資／「成長株投資」と「バリュー投資」の違い／マザーズ（グロース）は「最悪の市場」／「トレンドフォロワー」と「コントラリアン」　ほか\n■第4章　地獄の沙汰は持株次第─25年間の軌跡\n　K1ファンドの運用スタイルの変遷／ファンドのパフォーマンス　ほか\n■第5章　REIT─落ちてくるナイフを2度つかむ\n　まさかのIPO「20億円分」当選／リーマンショックとREIT暴落\n■第6章　実践のハイライト─ロング\n■第7章　実践のハイライト─ショート・ペアートレード\n　個人投資家には個別銘柄のショートは勧められない／ショートの分散投資はおろかな行為／日経225指数の闇／ようやくわかったショートの勝ち方　ほか\n■第8章　やってはいけない投資\n　ESG投資はナンセンス／未公開株は決して買ってはいけない　ほか\n■第9章これからの日本株市場\n　10年以内に起きる破滅的リスク／今後の日本株を取り巻く環境「8」の予想／縮小を続ける内需／日本株ショーテッジ時代の到来　ほか\n第1章　市場はあなたを見捨てない\n第2章　ヘッジファンドへの長い道のり\n第3章　「割安小型成長株」の破壊力\n第4章　地獄の沙汰は持株次第──25年間の軌跡\n第5章　REIT──落ちてくるナイフを2度つかむ\n第6章　実践のハイライト──ロング\n第7章　実践のハイライト──ショート・ペアートレード\n第8章　やってはいけない投資\n第9章　これからの日本株市場",
+      "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/0355/9784065350355_1_2.jpg?_ex=200x200",
+      "itemUrl": "https://books.rakuten.co.jp/rb/17770405/?rafcid=wsc_b_bs_1077795699367532233",
+      "price": 1980,
+      "title": "わが投資術　市場は誰に微笑むか"
+    },
+    {
+      "author": "ベンジャミン・グレアム",
+      "description": "『賢明なる投資家』の理解度が一気に進む秀逸な「解説」付き！投資本なかで最高傑作とだれもが認めるベンジャミン・グレアムの『賢明なる投資家』を、ウォール・ストリート・ジャーナルの傑出した金融ジャーナリストであるジェイソン・ツバイクが各章ごとに現代の市場に合わせて解説を加えたのが本書である。本書を読めば、グレアムが主張し続けてきた「バリュー投資」の奥義である「安全性分析（ｓｅｃｕｒｉｔｙ　ａｎａｌｙｓｉｓ）」という普遍的原則を投資にいかに適用し、実践するかが手に取るように分かる。",
+      "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3400/9784775973400_1_2.jpg?_ex=200x200",
+      "itemUrl": "https://books.rakuten.co.jp/rb/18327208/?rafcid=wsc_b_bs_1077795699367532233",
+      "price": 4180,
+      "title": "新　賢明なる投資家（下）第3版"
+    },
+    {
+      "author": "ベンジャミン・グレアム/ジェイソン・ツバイク",
+      "description": "本書は、投資に関する永久不滅の古典であり、安全性分析（ｓｅｃｕｒｉｔｙ　ａｎａｌｙｓｉｓ）の普遍的原則が詰め込まれているベンジャミン・グレアムの『賢明なる投資家』を元に（『賢明なる投資家』には一切手を加えていない）、ウォール・ストリート・ジャーナルの著名な投資ライターであるジェイソン・ツバイクが各章ごとに、現代の状況にマッチする形で最新の解説を書き下ろしたものである。また、伝説の投資家で、著者の最も有名で大成功した弟子であるウォーレン・バフェットも序文と付録を寄稿している。",
+      "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3394/9784775973394_1_2.jpg?_ex=200x200",
+      "itemUrl": "https://books.rakuten.co.jp/rb/18304478/?rafcid=wsc_b_bs_1077795699367532233",
+      "price": 4180,
+      "title": "新　賢明なる投資家（上）第3版"
+    },
+    {
+      "author": "ベンジャミン・グレアム/増沢和美",
+      "description": "待望！　日本初の「改訂第4版」を完全翻訳\nバフェットが師と仰ぎ、尊敬したベンジャミン・グレアムが残した「バリュー投資」の最高傑作！株式と債券の配分方法、だれも気づいていない将来伸びる「魅力のない二流企業株」や「割安株」の見つけ方を伝授！ 場中や、明日、1カ月後の値動きを全く気にしない「投資法」・・・原書は、今でもアメリカでロングセラーであり続けている古典的名著。数十年前から時代遅れな本といわれ続けながらも、やはり真理とは普遍的なものであり、人々に必要とされてきた書物である。ITバブルがはじけた今、バリュー投資を勉強したいと願う方には、バフェットの本とともに、お勧めしたい「投資家の教科書」である。",
+      "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9391/93910329.jpg?_ex=200x200",
+      "itemUrl": "https://books.rakuten.co.jp/rb/1320854/?rafcid=wsc_b_bs_1077795699367532233",
+      "price": 4180,
+      "title": "賢明なる投資家"
+    }
+  ];
+            
+            // 閲覧履歴に追加
+            function addToViewHistory(book) {
+                let history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+                if (!history.find(b => b.title === book.title)) {
+                    history.unshift(book);
+                    if (history.length > 20) history.pop();
+                }
+                localStorage.setItem("viewHistory", JSON.stringify(history));
+                displayViewHistory();
+                displayRecommendedBooksByKeywords();
+            }
+            
+            // 閲覧履歴表示（既存のdisplayViewHistoryと同じ）
+            function displayViewHistory() {
+                const historyDiv = document.getElementById("view-history");
+                if (!historyDiv) return;
+                historyDiv.innerHTML = "";
+                const history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+                history.forEach(book => {
+                    const bookDiv = document.createElement("div");
+                    bookDiv.className = "book";
+                    const imgLink = document.createElement("a");
+                    imgLink.href = book.itemUrl;
+                    imgLink.target = "_blank";
+                    const img = document.createElement("img");
+                    img.src = book.image;
+                    img.alt = book.title;
+                    imgLink.appendChild(img);
+                    bookDiv.appendChild(imgLink);
+                    const detailsDiv = document.createElement("div");
+                    detailsDiv.className = "book-details";
+                    detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
+                    bookDiv.appendChild(detailsDiv);
+                    historyDiv.appendChild(bookDiv);
+                });
+            }
+            
+            // あなたにおすすめ表示
+            function displayRecommendedBooksByKeywords() {
+    const recDiv = document.getElementById("recommend-books");
+    if (!recDiv) return;
+    recDiv.innerHTML = "";
+
+    const history = JSON.parse(localStorage.getItem("viewHistory") || "[]");
+    if (history.length === 0) return;
+
+    const recBooks = [];
+    const allBooks = window.allBooks || [];
+
+    history.forEach(h => {
+        const hWords = (h.title + " " + h.author).toLowerCase().split(/\s+/);
+        allBooks.forEach(b => {
+            if (!history.find(x => x.title === b.title) && !recBooks.find(x => x.title === b.title)) {
+                const bWords = (b.title + " " + b.author).toLowerCase().split(/\s+/);
+                if (hWords.some(hw => bWords.some(bw => bw.includes(hw) || hw.includes(bw)))) {
+                    recBooks.push(b);
+                }
+            }
+        });
+    });
+
+    if (recBooks.length === 0) return;
+
+    // 横スクロール用ラッパー
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.overflowX = "auto";
+    wrapper.style.gap = "10px";
+
+    recBooks.slice(0, 20).forEach(book => {
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+        bookDiv.style.flex = "0 0 auto"; // ←横スクロール内で縦に崩れないように
+        bookDiv.style.display = "flex";
+        bookDiv.style.flexDirection = "column";
+        bookDiv.style.alignItems = "center";
+
+        const imgLink = document.createElement("a");
+        imgLink.href = book.itemUrl;
+        imgLink.target = "_blank";
+
+        const img = document.createElement("img");
+        img.src = book.image;
+        img.alt = book.title;
+        imgLink.appendChild(img);
+        bookDiv.appendChild(imgLink);
+
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "book-details";
+        detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
+        bookDiv.appendChild(detailsDiv);
+
+        wrapper.appendChild(bookDiv);
+    });
+
+    recDiv.appendChild(wrapper);
+}
+
+            
+            // ページロード時に表示
+            window.addEventListener("DOMContentLoaded", () => {
+                displayViewHistory();
+                displayRecommendedBooksByKeywords();
+            });
+            </script>
+            
 </body>
 </html>
