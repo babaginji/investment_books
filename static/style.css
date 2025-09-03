@@ -317,6 +317,16 @@ h1 {
     color: gold;
     cursor: pointer;
 }
+.library-info {
+    display: none;
+    font-size: 6px;
+    margin-top: 4px;
+    text-align: left;
+    background: #f0f8ff; /* 薄い背景 */
+    padding: 4px;
+    border-radius: 4px;
+}
+
 /* -----------------------------
    閲覧履歴の横スクロールリスト
 ----------------------------- */
