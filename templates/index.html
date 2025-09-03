@@ -189,112 +189,114 @@
             }
         
             // -----------------------------
-            // 周辺図書館情報取得
-            // -----------------------------
-            async function fetchLibraryInfo(bookTitle, containerDiv) {
-                if (!navigator.geolocation) {
-                    containerDiv.innerHTML = "<p>位置情報を取得できません。</p>";
-                    return;
-                }
-        
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-        
-                    const res = await fetch(`/library?title=${encodeURIComponent(bookTitle)}&lat=${lat}&lon=${lon}`);
-                    const libraries = await res.json();
-        
-                    if (!libraries || libraries.length === 0) {
-                        containerDiv.innerHTML = "<p>近くの図書館で在庫が見つかりませんでした。</p>";
-                        return;
-                    }
-        
-                    libraries.sort((a,b) => a.distance - b.distance);
-                    containerDiv.innerHTML = "";
-                    libraries.forEach(lib => {
-                        const div = document.createElement("div");
-                        div.className = "library-item";
-                        div.innerHTML = `<p>📚 ${lib.name} (${lib.distance.toFixed(1)} km)</p><p>在庫: ${lib.stock}</p>`;
-                        containerDiv.appendChild(div);
-                    });
-                }, (err) => {
-                    containerDiv.innerHTML = "<p>位置情報の取得に失敗しました。</p>";
-                });
-            }
-        
-            // -----------------------------
-            // 検索結果表示
-            // -----------------------------
-            function displaySearchResults() {
-                const resultsDiv = document.getElementById("search-results");
-                if (!resultsDiv) return;
-                resultsDiv.innerHTML = "";
-        
-                searchResults.forEach(rawBook => {
-                    const book = normalizeBook(rawBook);
-        
-                    const bookDiv = document.createElement("div");
-                    bookDiv.className = "book";
-        
-                    const star = document.createElement("span");
-                    star.className = "star";
-                    star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
-                    star.style.cursor = "pointer";
-                    star.onclick = () => {
-                        const index = myShelf.findIndex(b => b.title === book.title);
-                        if (index === -1) myShelf.push(book);
-                        else myShelf.splice(index, 1);
-                        saveShelfLocal();
-                        updateMyShelfDisplay();
-                        displaySearchResults();
-                    };
-        
-                    const imgLink = document.createElement("a");
-                    imgLink.href = book.itemUrl;
-                    imgLink.target = "_blank";
-                    imgLink.onclick = () => addToViewHistory(book);
-        
-                    const img = document.createElement("img");
-                    img.src = book.image;
-                    img.alt = book.title;
-                    imgLink.appendChild(img);
-        
-                    bookDiv.appendChild(imgLink);
-                    bookDiv.appendChild(star);
-        
-                    const detailsDiv = document.createElement("div");
-                    detailsDiv.className = "book-details";
-                    detailsDiv.style.display = "none";
-                    detailsDiv.innerHTML = `<p>価格: ${book.price}</p><p>著者: ${book.author}</p>`;
-                    bookDiv.appendChild(detailsDiv);
-        
-                    // ←ここで図書館情報用 div を追加
-                    const libraryDiv = document.createElement("div");
-                    libraryDiv.className = "library-info";
-                    libraryDiv.style.display = "none";
-                    bookDiv.appendChild(libraryDiv);
-        
-                    const toggleBtn = document.createElement("span");
-                    toggleBtn.className = "toggle-btn";
-                    toggleBtn.textContent = "詳細を見る";
-                    toggleBtn.onclick = () => {
-                        const isHidden = detailsDiv.style.display === "none";
-                        detailsDiv.style.display = isHidden ? "block" : "none";
-                        libraryDiv.style.display = isHidden ? "block" : "none";
-                        toggleBtn.textContent = isHidden ? "詳細を隠す" : "詳細を見る";
+// 周辺図書館情報取得
+// -----------------------------
+async function fetchLibraryInfo(bookTitle, containerDiv) {
+    if (!navigator.geolocation) {
+        containerDiv.innerHTML = "<p>位置情報を取得できません。</p>";
+        return;
+    }
 
-                        if (isHidden) {
-                            // 表示する時だけ fetch
-                            fetchLibraryInfo(book.title, libraryDiv);
-                        }
-                    };
+    navigator.geolocation.getCurrentPosition(async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
 
-                    bookDiv.appendChild(toggleBtn);
-        
-                    resultsDiv.appendChild(bookDiv);
-                });
+        try {
+            const res = await fetch(`/library?title=${encodeURIComponent(bookTitle)}&lat=${lat}&lon=${lon}`);
+            const libraries = await res.json();
+
+            if (!libraries || libraries.length === 0) {
+                containerDiv.innerHTML = "<p>近くの図書館で在庫が見つかりませんでした。</p>";
+                return;
             }
-        
+
+            libraries.sort((a,b) => a.distance - b.distance);
+            containerDiv.innerHTML = "";
+            libraries.forEach(lib => {
+                const div = document.createElement("div");
+                div.className = "library-item";
+                div.innerHTML = `<p>📚 ${lib.name} (${lib.distance.toFixed(1)} km)</p><p>在庫: ${lib.stock}</p>`;
+                containerDiv.appendChild(div);
+            });
+        } catch (err) {
+            containerDiv.innerHTML = "<p>図書館情報の取得に失敗しました。</p>";
+        }
+    }, (err) => {
+        containerDiv.innerHTML = "<p>位置情報の取得に失敗しました。</p>";
+    });
+}
+
+// -----------------------------
+// 検索結果表示
+// -----------------------------
+function displaySearchResults() {
+    const resultsDiv = document.getElementById("search-results");
+    if (!resultsDiv) return;
+    resultsDiv.innerHTML = "";
+
+    searchResults.forEach(rawBook => {
+        const book = normalizeBook(rawBook);
+
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+        bookDiv.style.display = "flex";
+        bookDiv.style.flexDirection = "column";
+        bookDiv.style.alignItems = "center";
+
+        const star = document.createElement("span");
+        star.className = "star";
+        star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
+        star.style.cursor = "pointer";
+        star.onclick = () => {
+            const index = myShelf.findIndex(b => b.title === book.title);
+            if (index === -1) myShelf.push(book);
+            else myShelf.splice(index, 1);
+            saveShelfLocal();
+            updateMyShelfDisplay();
+            displaySearchResults();
+        };
+
+        const imgLink = document.createElement("a");
+        imgLink.href = book.itemUrl;
+        imgLink.target = "_blank";
+        imgLink.onclick = () => addToViewHistory(book);
+
+        const img = document.createElement("img");
+        img.src = book.image;
+        img.alt = book.title;
+        imgLink.appendChild(img);
+
+        bookDiv.appendChild(imgLink);
+        bookDiv.appendChild(star);
+
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "book-details";
+        detailsDiv.innerHTML = `<p>価格: ${book.price}</p><p>著者: ${book.author}</p>`;
+        bookDiv.appendChild(detailsDiv);
+
+        // 図書館情報用 div
+        const libraryDiv = document.createElement("div");
+        libraryDiv.className = "library-info";
+        bookDiv.appendChild(libraryDiv);
+
+        const toggleBtn = document.createElement("span");
+        toggleBtn.className = "toggle-btn";
+        toggleBtn.textContent = "詳細を見る";
+        toggleBtn.onclick = () => {
+            const isHidden = !detailsDiv.classList.contains("show");
+
+            detailsDiv.classList.toggle("show", isHidden);
+            libraryDiv.classList.toggle("show", isHidden);
+            toggleBtn.textContent = isHidden ? "詳細を隠す" : "詳細を見る";
+
+            if (isHidden) fetchLibraryInfo(book.title, libraryDiv);
+        };
+
+        bookDiv.appendChild(toggleBtn);
+        resultsDiv.appendChild(bookDiv);
+    });
+}
+
             // -----------------------------
             // 閲覧履歴機能
             // -----------------------------

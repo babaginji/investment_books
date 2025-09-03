@@ -317,15 +317,23 @@ h1 {
     color: gold;
     cursor: pointer;
 }
+.book-details.show, .library-info.show {
+    display: block !important;
+}
+
 .library-info {
     display: none;
-    font-size: 6px;
-    margin-top: 4px;
-    text-align: left;
-    background: #f0f8ff; /* 薄い背景 */
+    width: 100%;
+    box-sizing: border-box;
+    background: #f0f8ff;
     padding: 4px;
+    margin-top: 4px;
     border-radius: 4px;
+    font-size: 10px;
+    color: #000;
 }
+
+
 
 /* -----------------------------
    閲覧履歴の横スクロールリスト
