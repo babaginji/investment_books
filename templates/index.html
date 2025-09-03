@@ -185,77 +185,90 @@
             }
         
             // -----------------------------
-            // 検索結果表示
-            // -----------------------------
-            function displaySearchResults() {
-                const resultsDiv = document.getElementById("search-results");
-                if (!resultsDiv) return;
-                resultsDiv.innerHTML = "";
-        
-                searchResults.forEach(book => {
-                    const bookDiv = document.createElement("div");
-                    bookDiv.className = "book";
-        
-                    // ★の表示
-                    const star = document.createElement("span");
-                    star.className = "star";
-                    star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
-                    star.style.cursor = "pointer";
-                    star.onclick = () => {
-                        const index = myShelf.findIndex(b => b.title === book.title);
-                        if (index === -1) {
-                            myShelf.push(book);
-                        } else {
-                            myShelf.splice(index, 1);
-                        }
-                        saveShelfLocal();
-                        updateMyShelfDisplay();
-                        displaySearchResults();
-                    };
-        
-                    const imgLink = document.createElement("a");
-                    imgLink.href = book.itemUrl;
-                    imgLink.target = "_blank";
-        
-                    // クリックで閲覧履歴に追加
-                    imgLink.onclick = () => addToViewHistory(book);
-        
-                    const img = document.createElement("img");
-                    img.src = book.image;
-                    img.alt = book.title;
-                    imgLink.appendChild(img);
-        
-                    bookDiv.appendChild(imgLink);
-                    bookDiv.appendChild(star);
-        
-                    const detailsDiv = document.createElement("div");
-                    detailsDiv.className = "book-details";
-                    detailsDiv.style.display = "none";
-                    detailsDiv.innerHTML = `
-                        <p>価格: ¥${book.price}</p>
-                        <p>楽天API:</p>
-                        <p>Amazon情報:</p>
-                    `;
-                    bookDiv.appendChild(detailsDiv);
-        
-                    const toggleBtn = document.createElement("span");
-                    toggleBtn.className = "toggle-btn";
-                    toggleBtn.textContent = "詳細を見る";
-                    toggleBtn.onclick = () => {
-                        if (detailsDiv.style.display === "none") {
-                            detailsDiv.style.display = "block";
-                            toggleBtn.textContent = "詳細を隠す";
-                        } else {
-                            detailsDiv.style.display = "none";
-                            toggleBtn.textContent = "詳細を見る";
-                        }
-                    };
-                    bookDiv.appendChild(toggleBtn);
-        
-                    resultsDiv.appendChild(bookDiv);
-                });
+// 本検索の結果を統一形式に変換（楽天 or Open Library）
+// -----------------------------
+function normalizeBook(rawBook) {
+    return {
+        title: rawBook.title || "",
+        author: rawBook.author || "",
+        price: rawBook.price || "情報なし",  // Open Libraryは price がない
+        image: rawBook.image || rawBook.cover || "", // Open Libraryは cover
+        itemUrl: rawBook.itemUrl || rawBook.url || "#",
+        isbn: rawBook.isbn || "",
+    };
+}
+
+// -----------------------------
+// 検索結果表示
+// -----------------------------
+function displaySearchResults() {
+    const resultsDiv = document.getElementById("search-results");
+    if (!resultsDiv) return;
+    resultsDiv.innerHTML = "";
+
+    searchResults.forEach(rawBook => {
+        const book = normalizeBook(rawBook); // ← ここで統一
+
+        const bookDiv = document.createElement("div");
+        bookDiv.className = "book";
+
+        // ★の表示
+        const star = document.createElement("span");
+        star.className = "star";
+        star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
+        star.style.cursor = "pointer";
+        star.onclick = () => {
+            const index = myShelf.findIndex(b => b.title === book.title);
+            if (index === -1) {
+                myShelf.push(book);
+            } else {
+                myShelf.splice(index, 1);
             }
-        
+            saveShelfLocal();
+            updateMyShelfDisplay();
+            displaySearchResults();
+        };
+
+        const imgLink = document.createElement("a");
+        imgLink.href = book.itemUrl;
+        imgLink.target = "_blank";
+        imgLink.onclick = () => addToViewHistory(book);
+
+        const img = document.createElement("img");
+        img.src = book.image;
+        img.alt = book.title;
+        imgLink.appendChild(img);
+
+        bookDiv.appendChild(imgLink);
+        bookDiv.appendChild(star);
+
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "book-details";
+        detailsDiv.style.display = "none";
+        detailsDiv.innerHTML = `
+            <p>価格: ${book.price}</p>
+            <p>著者: ${book.author}</p>
+        `;
+        bookDiv.appendChild(detailsDiv);
+
+        const toggleBtn = document.createElement("span");
+        toggleBtn.className = "toggle-btn";
+        toggleBtn.textContent = "詳細を見る";
+        toggleBtn.onclick = () => {
+            if (detailsDiv.style.display === "none") {
+                detailsDiv.style.display = "block";
+                toggleBtn.textContent = "詳細を隠す";
+            } else {
+                detailsDiv.style.display = "none";
+                toggleBtn.textContent = "詳細を見る";
+            }
+        };
+        bookDiv.appendChild(toggleBtn);
+
+        resultsDiv.appendChild(bookDiv);
+    });
+}
+
             // -----------------------------
             // 閲覧履歴機能
             // -----------------------------
