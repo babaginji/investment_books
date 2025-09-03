@@ -150,39 +150,46 @@ def search_books():
 
     # 3. 図書館情報取得（現在地がある場合）
     if lat and lon:
-    user_lat, user_lon = float(lat), float(lon)
-    libraries = find_nearby_libraries(user_lat, user_lon)
-    
-    def calc_distance(lat1, lon1, lat2, lon2):
-        from math import radians, sin, cos, sqrt, atan2
-        R = 6371  # km
-        dlat = radians(lat2 - lat1)
-        dlon = radians(lon2 - lon1)
-        a = sin(dlat/2)**2 + cos(radians(lat1))*cos(radians(lat2))*sin(dlon/2)**2
-        c = 2 * atan2(sqrt(a), sqrt(1-a))
-        return R * c
+        user_lat, user_lon = float(lat), float(lon)
+        libraries = find_nearby_libraries(user_lat, user_lon)
 
-    for book in books:
-        isbn = book.get("isbn")
-        if isbn:
-            book["libraries"] = []
-            for lib in libraries:
-                availability = check_calil_availability(isbn, lib["systemid"])
-                # 在庫があるかだけ判定
-                stock = 0
-                if availability.get(isbn):
-                    for sid, status in availability[isbn].items():
-                        if status == "OK":
-                            stock += 1
-                distance = calc_distance(user_lat, user_lon, float(lib.get("lat")), float(lib.get("lon")))
-                book["libraries"].append({
-                    "name": lib.get("formal"),
-                    "distance": distance,
-                    "stock": stock
-                })
+        # 距離計算用関数
+        def calc_distance(lat1, lon1, lat2, lon2):
+            from math import radians, sin, cos, sqrt, atan2
+
+            R = 6371  # km
+            dlat = radians(lat2 - lat1)
+            dlon = radians(lon2 - lon1)
+            a = (
+                sin(dlat / 2) ** 2
+                + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
+            )
+            c = 2 * atan2(sqrt(a), sqrt(1 - a))
+            return R * c
+
+        for book in books:
+            isbn = book.get("isbn")
+            if isbn:
+                book["libraries"] = []
+                for lib in libraries:
+                    availability = check_calil_availability(isbn, lib["systemid"])
+                    stock = 0
+                    if availability.get(isbn):
+                        for sid, status in availability[isbn].items():
+                            if status == "OK":
+                                stock += 1
+                    distance = calc_distance(
+                        user_lat, user_lon, float(lib.get("lat")), float(lib.get("lon"))
+                    )
+                    book["libraries"].append(
+                        {
+                            "name": lib.get("formal"),
+                            "distance": distance,
+                            "stock": stock,
+                        }
+                    )
             # 距離順にソート
             book["libraries"].sort(key=lambda x: x["distance"])
-
     return jsonify(books)
 
 
