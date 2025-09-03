@@ -579,7 +579,7 @@ h2 {
 
 #recommend-books > div {
     display: flex;
-    gap: 10px;
+    gap: 3px;
     min-width: max-content;  /* ←これがポイント！ */
 }
 
