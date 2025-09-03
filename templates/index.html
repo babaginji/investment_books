@@ -354,6 +354,22 @@ function displaySearchResults() {
         detailsDiv.className = "book-details";
         detailsDiv.innerHTML = `<p>価格: ${book.price}</p><p>著者: ${book.author}</p>`;
         bookDiv.appendChild(detailsDiv);
+        // ここでトグルボタンを追加
+const toggleBtn = document.createElement("span");
+toggleBtn.className = "toggle-btn";
+toggleBtn.style.cursor = "pointer";
+toggleBtn.style.color = "#007bff";
+toggleBtn.style.marginTop = "4px";
+toggleBtn.textContent = "詳細を表示";
+
+toggleBtn.onclick = () => {
+    if (detailsDiv.classList.toggle("show")) {
+        toggleBtn.textContent = "詳細を隠す";
+    } else {
+        toggleBtn.textContent = "詳細を表示";
+    }
+};
+bookDiv.appendChild(toggleBtn);
 
         resultsDiv.appendChild(bookDiv);
     });

@@ -259,7 +259,7 @@ h1 {
     padding: 3px 0;
     margin: 0;
     scroll-behavior: smooth;
-    border-bottom: 10px solid #e0e0e0; /* 薄い灰色の線 */
+    border-bottom: 4px solid #e0e0e0; /* 薄い灰色の線 */
     padding-bottom: 0px;  /* 線と検索結果の間の余白 */
     margin-bottom: 4px;  /* 線と閲覧履歴の間の余白 */
 }
@@ -275,6 +275,14 @@ h1 {
     position: relative;
     transition: transform 0.2s;
 }
+#search-results .book .book-details {
+    position: relative;
+    z-index: 10;        /* 上に表示 */
+    background: #f9f9f9; /* 白っぽくても見えるように */
+    padding: 4px;
+    border-radius: 4px;
+}
+
 
 #search-results .book:hover {
     transform: translateY(-5px);
