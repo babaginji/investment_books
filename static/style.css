@@ -582,5 +582,7 @@ h2 {
 }
 
 #recommend-books .book {
-    flex: 0 0 auto;       /* 横スクロール内で縦にならない */
+    flex: 0 0 auto;       /* 横スクロールで縦にならない */
+    width: 150px;         /* 表示したい幅に固定 */
+    text-align: center;
 }
