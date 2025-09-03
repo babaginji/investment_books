@@ -626,19 +626,18 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (recBooks.length === 0) return;
 
-    // 横スクロール用ラッパー
-    const wrapper = document.createElement("div");
-    wrapper.style.display = "flex";
-    wrapper.style.overflowX = "auto";
-    wrapper.style.gap = "10px";
+    // 横スクロール用 wrapper
+    const wrapperDiv = document.createElement("div");
+    wrapperDiv.style.display = "flex";
+    wrapperDiv.style.overflowX = "auto";
+    wrapperDiv.style.gap = "10px";
+    wrapperDiv.style.padding = "5px 0";
 
-    recBooks.slice(0, 20).forEach(book => {
+    recBooks.slice(0, 10).forEach(book => {
         const bookDiv = document.createElement("div");
         bookDiv.className = "book";
-        bookDiv.style.flex = "0 0 auto"; // ←横スクロール内で縦に崩れないように
-        bookDiv.style.display = "flex";
-        bookDiv.style.flexDirection = "column";
-        bookDiv.style.alignItems = "center";
+        bookDiv.style.flex = "0 0 auto"; // 横スクロールで縦にならない
+        bookDiv.style.width = "150px";   // 好きな幅に調整
 
         const imgLink = document.createElement("a");
         imgLink.href = book.itemUrl;
@@ -647,6 +646,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const img = document.createElement("img");
         img.src = book.image;
         img.alt = book.title;
+        img.style.width = "100%";
         imgLink.appendChild(img);
         bookDiv.appendChild(imgLink);
 
@@ -655,10 +655,10 @@ window.addEventListener("DOMContentLoaded", () => {
         detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
         bookDiv.appendChild(detailsDiv);
 
-        wrapper.appendChild(bookDiv);
+        wrapperDiv.appendChild(bookDiv);
     });
 
-    recDiv.appendChild(wrapper);
+    recDiv.appendChild(wrapperDiv);
 }
 
             
