@@ -81,6 +81,12 @@ def find_nearby_libraries(lat, lon):
     }
     response = requests.get(url, params=params)
     libraries = response.json()
+
+    # 緯度経度を追加
+    for lib in libraries:
+        lib["lat"] = lib.get("lat")
+        lib["lon"] = lib.get("lon")
+
     return libraries[:5]  # 上位5館
 
 
