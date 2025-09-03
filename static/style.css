@@ -569,3 +569,18 @@ h2 {
 #view-history::-webkit-scrollbar {
     display: none;  /* Chrome, Safari */
 }
+
+
+#recommend-books {
+    width: 100%;          /* 画面幅いっぱいに */
+    overflow-x: auto;     /* 横スクロールを有効に */
+}
+
+#recommend-books > div { /* wrapper */
+    display: flex;
+    gap: 10px;
+}
+
+#recommend-books .book {
+    flex: 0 0 auto;       /* 横スクロール内で縦にならない */
+}
