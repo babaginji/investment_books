@@ -41,7 +41,7 @@
         <div id="nearby-libraries-wrapper">
             <div class="library-header">
                 <h2>近くの図書館</h2>
-                <a href="https://calil.jp/" target="_blank" class="library-link">リーカル検索</a>
+                <a href="https://calil.jp/" target="_blank" class="library-link">カーリル検索</a>
             </div>
         </div>
             <!-- 下段：図書館リンク -->
@@ -333,6 +333,7 @@ function displaySearchResults() {
         bookDiv.style.flexDirection = "column";
         bookDiv.style.alignItems = "center";
 
+        // ⭐マーク
         const star = document.createElement("span");
         star.className = "star";
         star.textContent = myShelf.find(b => b.title === book.title) ? "★" : "☆";
@@ -346,6 +347,7 @@ function displaySearchResults() {
             displaySearchResults();
         };
 
+        // 画像リンク
         const imgLink = document.createElement("a");
         imgLink.href = book.itemUrl;
         imgLink.target = "_blank";
@@ -359,10 +361,20 @@ function displaySearchResults() {
         bookDiv.appendChild(imgLink);
         bookDiv.appendChild(star);
 
+        // 本の詳細（初期非表示）
         const detailsDiv = document.createElement("div");
         detailsDiv.className = "book-details";
         detailsDiv.innerHTML = `<p>価格: ¥${book.price}</p><p>著者: ${book.author}</p>`;
         bookDiv.appendChild(detailsDiv);
+
+        // トグルボタン
+        const toggleBtn = document.createElement("span");
+        toggleBtn.className = "toggle-btn";
+        toggleBtn.textContent = "詳細表示";
+        toggleBtn.onclick = () => {
+            detailsDiv.classList.toggle("show");
+        };
+        bookDiv.appendChild(toggleBtn);
 
         resultsDiv.appendChild(bookDiv);
     });
