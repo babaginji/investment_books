@@ -278,17 +278,17 @@
                     toggleBtn.className = "toggle-btn";
                     toggleBtn.textContent = "詳細を見る";
                     toggleBtn.onclick = () => {
-                        if (detailsDiv.style.display === "none") {
-                            detailsDiv.style.display = "block";
-                            libraryDiv.style.display = "block";
-                            toggleBtn.textContent = "詳細を隠す";
+                        const isHidden = detailsDiv.style.display === "none";
+                        detailsDiv.style.display = isHidden ? "block" : "none";
+                        libraryDiv.style.display = isHidden ? "block" : "none";
+                        toggleBtn.textContent = isHidden ? "詳細を隠す" : "詳細を見る";
+
+                        if (isHidden) {
+                            // 表示する時だけ fetch
                             fetchLibraryInfo(book.title, libraryDiv);
-                        } else {
-                            detailsDiv.style.display = "none";
-                            libraryDiv.style.display = "none";
-                            toggleBtn.textContent = "詳細を見る";
                         }
                     };
+
                     bookDiv.appendChild(toggleBtn);
         
                     resultsDiv.appendChild(bookDiv);
