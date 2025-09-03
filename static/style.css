@@ -298,6 +298,9 @@ h1 {
     font-size: 7px;
     margin-top: 3px;
 }
+.book-details h3 { font-size: 8px; }
+.book-details p { font-size: 6px; }
+
 .book .toggle-btn {
     display: block;
     margin-top: 5px;
