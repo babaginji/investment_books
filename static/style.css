@@ -206,11 +206,11 @@ h1 {
     border-radius: 4px;
 }
 .books-container .book h3 {
-    font-size: 17px;
+    font-size: 8px;
     margin: 4px 0 2px;
 }
 .books-container .book p {
-    font-size: 17px;
+    font-size: 8px;
     margin: 2px 0;
     color: #444;
 }
