@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -28,18 +29,25 @@
 
     <p><a href="{{ url_for('index') }}">トップに戻る</a></p>
 
+    
     <script>
-        let myShelf = [];
-
-        function loadMyShelf() {
-            const data = JSON.parse(localStorage.getItem("myShelf") || "[]");
-            return data.map(book => {
-                if (typeof book.read === 'undefined') book.read = false;
-                return book;
-            });
-        }
+        // Flask から渡された全棚データ
+        const shelves = {{ shelves | tojson }};
+        let currentShelf = '{{ shelf_name }}';
+        let myShelf = JSON.parse(localStorage.getItem("myShelf") || "[]");
+    
         function saveMyShelf() {
             localStorage.setItem("myShelf", JSON.stringify(myShelf));
+        }
+    
+        // 表示対象の本を取得
+        function getBooksToDisplay() {
+            if (currentShelf === "私の本棚") {
+                return myShelf;
+            } else {
+                // shelves.json から読み込む棚
+                return shelves[currentShelf] || [];
+            }
         }
 
         function createBookDiv(book) {
@@ -203,33 +211,37 @@
         }
 
         let currentTab = 'all';
-        function displayShelf() {
-            const container = document.getElementById('books-container');
-            container.innerHTML = '';
-            myShelf.forEach(book => {
-                if (currentTab === 'all' || (currentTab === 'read' && book.read)) {
-                    container.appendChild(createBookDiv(book));
-                }
-            });
-        }
+    function displayShelf() {
+        const container = document.getElementById('books-container');
+        container.innerHTML = '';
 
-        document.getElementById('tab-all').onclick = () => {
-            currentTab = 'all';
-            document.getElementById('tab-all').classList.add('active');
-            document.getElementById('tab-read').classList.remove('active');
-            displayShelf();
-        };
-        document.getElementById('tab-read').onclick = () => {
-            currentTab = 'read';
-            document.getElementById('tab-read').classList.add('active');
-            document.getElementById('tab-all').classList.remove('active');
-            displayShelf();
-        };
+        const books = getBooksToDisplay();
+        books.forEach(book => {
+            if (currentTab === 'all' || (currentTab === 'read' && book.read)) {
+                container.appendChild(createBookDiv(book));
+            }
+        });
+    }
 
-        window.onload = () => {
-            myShelf = loadMyShelf();
-            displayShelf();
-        };
-    </script>
+    document.getElementById('tab-all').onclick = () => {
+        currentTab = 'all';
+        document.getElementById('tab-all').classList.add('active');
+        document.getElementById('tab-read').classList.remove('active');
+        displayShelf();
+    };
+    document.getElementById('tab-read').onclick = () => {
+        currentTab = 'read';
+        document.getElementById('tab-read').classList.add('active');
+        document.getElementById('tab-all').classList.remove('active');
+        displayShelf();
+    };
+
+    window.onload = () => {
+        myShelf = myShelf.map(b => { if (typeof b.read === 'undefined') b.read = false; return b; });
+        displayShelf();
+    };
+</script>
+
+    
 </body>
 </html>

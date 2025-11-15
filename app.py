@@ -204,14 +204,51 @@ def get_my_shelf():
     return jsonify({"my_shelf": shelves.get("私の本棚", [])})
 
 
+# -----------------------------
+# 各棚ページ
+# -----------------------------
 @app.route("/shelf/<path:shelf_name>")
 def shelf_page(shelf_name):
     shelf_name = unquote(shelf_name)
-    shelves = load_shelves()
-    books = shelves.get(shelf_name, [])
-    my_shelf_books = shelves.get("私の本棚", [])
+    shelves = load_shelves()  # JSON から読み込み
+    # 手書きで追加
+    shelves["貯蓄優先型"] = [
+        {
+            "author": "ベンジャミン・グレアム",
+            "description": "『賢明なる投資家』の理解度が一気に進む解説付き！",
+            "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3400/9784775973400_1_2.jpg?_ex=200x200",
+            "itemUrl": "https://books.rakuten.co.jp/rb/18327208/?rafcid=wsc_b_bs_1077795699367532233",
+            "price": 4180,
+            "title": "新　賢明なる投資家（下）第3版",
+        },
+        {
+            "author": "両＠リベ大学長",
+            "description": "142万部突破の『お金の大学』が超・パワーアップ！「新NISA」などの金融制度にも完全対応。さらに「証券口座やクレカ、銀行などの選び方」「超危険な金融商品リスト」など、新規内容も50ページ以上追加。実践しやすいお金の教養がてんこ盛りの一冊！",
+            "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3780/9784023323780_1_3.jpg?_ex=200x200",
+            "itemUrl": "https://books.rakuten.co.jp/rb/18041936/?rafcid=wsc_b_bs_1077795699367532233",
+            "price": 1650,
+            "title": "改訂版　本当の自由を手に入れる　お金の大学",
+        },
+    ]
+    shelves["積立安定型"] = [
+        {
+            "author": "両＠リベ大学長",
+            "description": "142万部突破の『お金の大学』が超・パワーアップ！「新NISA」などの金融制度にも完全対応。さらに「証券口座やクレカ、銀行などの選び方」「超危険な金融商品リスト」など、新規内容も50ページ以上追加。実践しやすいお金の教養がてんこ盛りの一冊！",
+            "image": "https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/3780/9784023323780_1_3.jpg?_ex=200x200",
+            "itemUrl": "https://books.rakuten.co.jp/rb/18041936/?rafcid=wsc_b_bs_1077795699367532233",
+            "price": 1650,
+            "title": "改訂版　本当の自由を手に入れる　お金の大学",
+        },
+    ]
+
+    my_books = shelves.get("私の本棚", [])
+    shelf_books = shelves.get(shelf_name, [])  # ←ここを name から shelf_name に変更
+
     return render_template(
-        "shelf.html", shelf_name=shelf_name, books=books, my_shelf=my_shelf_books
+        "bookshelf/shelf.html",
+        shelf_name=shelf_name,
+        shelves=shelves,
+        my_shelf=my_books,
     )
 
 
