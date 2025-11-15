@@ -588,3 +588,22 @@ h2 {
     width: 150px;      /* 好きな幅に固定 */
     text-align: center;
 }
+
+
+#fixed-footer {
+    position: fixed;       /* 画面に固定 */
+    bottom: 0;             /* 画面下に配置 */
+    left: 0;
+    width: 100%;           /* 横幅いっぱい */
+    background-color: #f8f8f8; /* 好きな色に変更可 */
+    border-top: 1px solid #ccc;
+    padding: 10px 0;
+    text-align: center;
+    z-index: 1000;         /* 上に重なるように */
+}
+
+#fixed-footer a {
+    text-decoration: none;
+    color: #007BFF; /* リンク色 */
+    font-weight: bold;
+}
